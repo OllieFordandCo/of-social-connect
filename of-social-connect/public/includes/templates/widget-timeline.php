@@ -7,7 +7,7 @@ foreach($tweets as $tweet):
         	<?php echo $tweet->text; ?>
         </div>
 		<div class="tweet-meta">
-        	<span class="time-meta"><a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet_id; ?>" target="_blank"><?php echo OF_Social_Connect::time_ago($tweet->created_at); ?></a></span>       
+        	<span class="time-meta"><a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet_id; ?>" target="_blank"><?php echo OF_Social_Connect::time_ago(strtotime($tweet->created_at)); ?></a></span>       
         	<span class="from-meta">from <?php echo $tweet->source; ?></span>
         </div> 
         <div class="tweet-intent">
