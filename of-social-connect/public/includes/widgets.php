@@ -45,12 +45,7 @@ class OF_Twitter_Timeline extends WP_Widget {
 				
 			else :			
 			
-				foreach($tweets as $tweet):
-					echo '<hr>';
-					echo $tweet->text;
-				endforeach;		
-				echo '<hr>';
-				echo $message;	
+				require_once( plugin_dir_path( __FILE__ ) . 'templates/widget-timeline.php' );
 				
 			endif;
 		
