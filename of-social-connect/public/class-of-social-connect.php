@@ -310,4 +310,62 @@ class OF_Social_Connect {
 		// @TODO: Define your filter hook callback here
 	}
 
+	/**
+	 * Retrieve any tweets saves on the database.
+	 *
+	 * @since    0.1.0
+	 */
+	public function retrieve_tweets($screenname, $no_tweets) {
+
+		//Check if user has already submitted the api key and secret
+		$twitter_api = get_option('of_twitter_api');
+		
+		$api_key = $twitter_api['key'];
+		$api_secret = $twitter_api['secret'];
+
+		if(!empty($api_key) && !empty($api_secret)) :
+		
+			$update = false;
+			if ( ! ( $result = get_transient( 'of_timeline_widget' ) ) ) {
+				$update = true;
+			};
+			
+			$screenname_changed = (isset($result['screenname'])) ? $result['screenname'] : $screenname;
+			$no_tweets_changed = (isset($result['no_tweets'])) ? $result['no_tweets'] : $no_tweets;
+			
+			if($screenname_changed !== $screenname || $no_tweets_changed !== $no_tweets) {
+				$update = true;
+			}
+			
+			$message = 'Transient Call';
+			
+			if($update) {
+				$message = 'Twitter Call';
+				
+				$storage = new OAuth\Common\Storage\WPDatabase();
+			
+				$credentials = new OAuth\Common\Consumer\Credentials(
+					$api_key,
+					$api_secret,
+					admin_url('options-general.php?page=of_twitter_connect')
+				);
+				$serviceFactory = new OAuth\ServiceFactory();
+				$twitterService = $serviceFactory->createService('twitter', $credentials, $storage);
+				
+				$result['screnname'] = $screenname;
+				$result['no_tweets'] = $no_tweets;
+				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$screenname.'&count='.$no_tweets));
+				
+				set_transient(  $screenname.'_of_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
+			}
+
+			return $result['tweets'];	
+		
+		else :
+			
+			return false;
+			
+		endif;	
+	}
+
 }

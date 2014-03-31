@@ -1,10 +1,5 @@
 <?php 
 
-use OAuth\OAuth1\Service\Twitter;
-use OAuth\Common\Storage\WPDatabase;
-use OAuth\Common\Consumer\Credentials;
-use OAuth\ServiceFactory;
-
 /**
  * Adds Foo_Widget widget.
  */
@@ -40,56 +35,28 @@ class OF_Twitter_Timeline extends WP_Widget {
 		if ( ! empty( $title ) )
 			echo $args['before_title'] . $title . $args['after_title'];
 
-		$api_key = get_option('of_twitter_api_key');
-		$api_secret = get_option('of_twitter_api_secret'); 
-		
-		if(!empty($api_key) && !empty($api_secret)) :
-		
-			$update = false;
-			if ( ! ( $result = get_transient( $screenname.'_of_timeline_widget' ) ) ) {
-				$update = true;
-			};
-			
-			$screenname_changed = (isset($result['screenname'])) ? $result['screenname'] : $screenname;
-			$no_tweets_changed = (isset($result['no_tweets'])) ? $result['no_tweets'] : $no_tweets;
-			
-			if($screenname_changed !== $screenname || $no_tweets_changed !== $no_tweets) {
-				$update = true;
-			}
-			
-			$message = 'Transient Call';
-			
-			if($update) {
-				$message = 'Twitter Call';
+		if( $tweets = OF_Social_Connect::retrieve_tweets($screenname, $no_tweets) ) :	
+						
+			$user_template = locate_template( 'of-social-connect/twitter/widget-timeline.php' );
 				
-				$storage = new WPDatabase();
+			if (!empty( $user_template )) :
+					  
+				include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
+				
+			else :			
 			
-				$credentials = new Credentials(
-					$api_key,
-					$api_secret,
-					admin_url('options-general.php?page=of_twitter_connect')
-				);
-				$serviceFactory = new ServiceFactory();
-				$twitterService = $serviceFactory->createService('twitter', $credentials, $storage);
-				
-				$result['screnname'] = $screenname;
-				$result['no_tweets'] = $no_tweets;
-				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$screenname.'&count='.$no_tweets));
-				
-				set_transient(  $screenname.'_of_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
-			}
-				
-				
-			foreach($result['tweets'] as $tweet):
+				foreach($tweets as $tweet):
+					echo '<hr>';
+					echo $tweet->text;
+				endforeach;		
 				echo '<hr>';
-				echo $tweet->text;
-			endforeach;		
-			echo '<hr>';
-			echo $message;		
+				echo $message;	
+				
+			endif;
 		
-		else:
+		else :
 		
-			echo 'Please, setup the plugin before using the widget';
+			echo 'Please, authorise your twitter account before retrieving tweets.';
 		
 		endif;
 		
