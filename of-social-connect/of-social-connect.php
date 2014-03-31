@@ -1,28 +1,27 @@
 <?php
 /**
- * The WordPress Plugin Boilerplate.
+ * Ollie Ford & Co Social Connect.
  *
- * A foundation off of which to build well-documented WordPress plugins that
- * also follow WordPress Coding Standards and PHP best practices.
+ * Plugin that uses the OAuth Library to help you connect with Social Network (currently only Twitter) and registers widgets and shortcodes to use on the front * end of your website.
  *
- * @package   Ollie Ford & Co Twitter Connect
- * @author    Your Name <email@example.com>
+ * @package   Ollie Ford & Co Social Connect
+ * @author    Rubén Madila (for Ollie Ford & Co) <ruben@ollieford.co.uk>
  * @license   GPL-2.0+
- * @link      http://example.com
- * @copyright 2014 Your Name or Company Name
+ * @link      http://www.ollieford.co.uk
+ * @copyright 2014 Ollie Ford & Co
  *
  * @wordpress-plugin
- * Plugin Name: Ollie Ford & Co Twitter Connect
+ * Plugin Name: Ollie Ford & Co Social Connect
  * Plugin URI: http://www.ollieford.co.uk
- * Description: 
- * Version: 0.1
+ * Description: Plugin that uses the OAuth Library to help you connect with Social Network (currently only Twitter) and registers widgets and shortcodes to use * on the front end of your website.
+ * Version: 0.1.0
  * Author: Ruben Madila
  * Author Email: ruben@ollieford.co.uk
- * Text Domain:       of_twitter_connect
+ * Text Domain:       of_social_connect
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages
- * GitHub Plugin URI: https://github.com/<owner>/<repo>
+ * GitHub Plugin URI: https://github.com/OllieFordandCo/ollieford-social-connect/
  */
 
 // If this file is called directly, abort.
@@ -40,7 +39,7 @@ if ( ! defined( 'WPINC' ) ) {
  * - replace `class-plugin-name.php` with the name of the plugin's class file
  *
  */
-require_once( plugin_dir_path( __FILE__ ) . 'public/class-of-twitter-connect.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'public/class-of-social-connect.php' );
 require_once (plugin_dir_path( __FILE__ ) . 'includes/OAuth/bootstrap.php');
 
 /*
@@ -52,8 +51,8 @@ require_once (plugin_dir_path( __FILE__ ) . 'includes/OAuth/bootstrap.php');
  * - replace Plugin_Name with the name of the class defined in
  *   `class-plugin-name.php`
  */
-register_activation_hook( __FILE__, array( 'OF_Twitter_Connect', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'OF_Twitter_Connect', 'deactivate' ) );
+register_activation_hook( __FILE__, array( 'OF_Social_Connect', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'OF_Social_Connect', 'deactivate' ) );
 
 /*
  * @TODO:
@@ -61,7 +60,7 @@ register_deactivation_hook( __FILE__, array( 'OF_Twitter_Connect', 'deactivate' 
  * - replace Plugin_Name with the name of the class defined in
  *   `class-plugin-name.php`
  */
-add_action( 'plugins_loaded', array( 'OF_Twitter_Connect', 'get_instance' ) );
+add_action( 'plugins_loaded', array( 'OF_Social_Connect', 'get_instance' ) );
 
 /*----------------------------------------------------------------------------*
  * Dashboard and Administrative Functionality
@@ -80,7 +79,7 @@ add_action( 'plugins_loaded', array( 'OF_Twitter_Connect', 'get_instance' ) );
  */
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 
-	require_once( plugin_dir_path( __FILE__ ) . 'admin/class-of-twitter-connect-admin.php' );
-	add_action( 'plugins_loaded', array( 'of_twitter_connect_admin', 'get_instance' ) );
+	require_once( plugin_dir_path( __FILE__ ) . 'admin/class-of-social-connect-admin.php' );
+	add_action( 'plugins_loaded', array( 'of_social_connect_admin', 'get_instance' ) );
 
 }

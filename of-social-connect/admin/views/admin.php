@@ -37,8 +37,8 @@ use OAuth\ServiceFactory;
 	?>
     <div>
     <form method="post" action="options.php">
-		<?php settings_fields('of_twitter_connect'); ?>
-    	<?php do_settings_sections( 'of_twitter_connect' ); ?> 
+		<?php settings_fields('of_social_connect'); ?>
+    	<?php do_settings_sections( 'of_social_connect' ); ?> 
 		<?php submit_button( 'Save changes', 'primary', 'submit', true ); ?>
 	</form>
 	</div>

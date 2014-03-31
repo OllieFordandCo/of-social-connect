@@ -1,12 +1,13 @@
 <?php
 /**
- * Plugin Name.
+ * Ollie Ford & Co Social Connect.
  *
- * @package   Ollie Ford & Co Twitter Connect
- * @author    Your Name <email@example.com>
+ *
+ * @package   Ollie Ford & Co Social Connect
+ * @author    Rubén Madila (for Ollie Ford & Co) <ruben@ollieford.co.uk>
  * @license   GPL-2.0+
- * @link      http://example.com
- * @copyright 2014 Your Name or Company Name
+ * @link      http://www.ollieford.co.uk
+ * @copyright 2014 Ollie Ford & Co
  */
 
 /**
@@ -21,19 +22,18 @@
  * @package Plugin_Name
  * @author  Your Name <email@example.com>
  */
-class OF_Twitter_Connect {
+class OF_Social_Connect {
 
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.0
+	 * @since   0.1.0
 	 *
 	 * @var     string
 	 */
-	const VERSION = '1.0.0';
+	const VERSION = '0.1.0';
 
 	/**
-	 * @TODO - Rename "plugin-name" to the name your your plugin
 	 *
 	 * Unique identifier for your plugin.
 	 *
@@ -42,16 +42,16 @@ class OF_Twitter_Connect {
 	 * of text. Its value should match the Text Domain file header in the main
 	 * plugin file.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @var      string
 	 */
-	protected $plugin_slug = 'of_twitter_connect';
+	protected $plugin_slug = 'of_social_connect';
 
 	/**
 	 * Instance of this class.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @var      object
 	 */
@@ -61,7 +61,7 @@ class OF_Twitter_Connect {
 	 * Initialize the plugin by setting localization and loading public scripts
 	 * and styles.
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 */
 	private function __construct() {
 
@@ -78,7 +78,7 @@ class OF_Twitter_Connect {
 		/* Define custom functionality.
 		 * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 		 */
-		add_action( 'widgets_init', array( $this, 'of_twitter_connect_widget_init' ) );
+		add_action( 'widgets_init', array( $this, 'OF_Social_Connect_widget_init' ) );
 		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
 	}
@@ -86,7 +86,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Return the plugin slug.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @return    Plugin slug variable.
 	 */
@@ -97,7 +97,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Return an instance of this class.
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 *
 	 * @return    object    A single instance of this class.
 	 */
@@ -114,7 +114,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Fired when the plugin is activated.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @param    boolean    $network_wide    True if WPMU superadmin uses
 	 *                                       "Network Activate" action, false if
@@ -151,7 +151,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Fired when the plugin is deactivated.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @param    boolean    $network_wide    True if WPMU superadmin uses
 	 *                                       "Network Deactivate" action, false if
@@ -189,7 +189,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Fired when a new site is activated with a WPMU environment.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @param    int    $blog_id    ID of the new blog.
 	 */
@@ -211,7 +211,7 @@ class OF_Twitter_Connect {
 	 * - not spam
 	 * - not deleted
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @return   array|false    The blog ids, false if no matches.
 	 */
@@ -231,7 +231,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Fired for each blog when the plugin is activated.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	private static function single_activate() {
 		// @TODO: Define activation functionality here
@@ -240,7 +240,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Fired for each blog when the plugin is deactivated.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	private static function single_deactivate() {
 		// @TODO: Define deactivation functionality here
@@ -249,7 +249,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Load the plugin text domain for translation.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function load_plugin_textdomain() {
 
@@ -264,7 +264,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Register and enqueue public-facing style sheet.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function enqueue_styles() {
 		wp_enqueue_style( $this->plugin_slug . '-plugin-styles', plugins_url( 'assets/css/public.css', __FILE__ ), array(), self::VERSION );
@@ -273,7 +273,7 @@ class OF_Twitter_Connect {
 	/**
 	 * Register and enqueues public-facing JavaScript files.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
@@ -286,9 +286,9 @@ class OF_Twitter_Connect {
 	 *        Actions:    http://codex.wordpress.org/Plugin_API#Actions
 	 *        Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
-	public function of_twitter_connect_widget_init() {
+	public function OF_Social_Connect_widget_init() {
 		$api_key = get_option('of_twitter_api_key');
 		$api_secret = get_option('of_twitter_api_secret'); 
 		if(!empty($api_key) && !empty($api_secret)) :		
@@ -304,7 +304,7 @@ class OF_Twitter_Connect {
 	 *        Filters: http://codex.wordpress.org/Plugin_API#Filters
 	 *        Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function filter_method_name() {
 		// @TODO: Define your filter hook callback here

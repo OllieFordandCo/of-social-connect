@@ -1,32 +1,29 @@
 <?php
 /**
- * Plugin Name.
+ * Ollie Ford & Co Social Connect.
  *
- * @package   OF_Twitter_Connect_Admin
- * @author    Your Name <email@example.com>
+ * @package   Ollie Ford & Co Social Connect
+ * @author    Rubén Madila (for Ollie Ford & Co) <ruben@ollieford.co.uk>
  * @license   GPL-2.0+
- * @link      http://example.com
- * @copyright 2014 Your Name or Company Name
+ * @link      http://www.ollieford.co.uk
+ * @copyright 2014 Ollie Ford & Co
  */
 
 /**
- * Plugin class. This class should ideally be used to work with the
+ * This Class is used to work with the
  * administrative side of the WordPress site.
  *
- * If you're interested in introducing public-facing
- * functionality, then refer to `class-plugin-name.php`
+ * For public-facing functionality refer to `class-of-social-connect.php`
  *
- * @TODO: Rename this class to a proper name for your plugin.
- *
- * @package Plugin_Name_Admin
- * @author  Your Name <email@example.com>
+ * @package Ollie Ford & Co Social Connect
+ * @author  Rubén Madila (for Ollie Ford & Co) <ruben@ollieford.co.uk>
  */
-class OF_Twitter_Connect_Admin {
+class OF_Social_Connect_Admin {
 
 	/**
 	 * Instance of this class.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @var      object
 	 */
@@ -35,7 +32,7 @@ class OF_Twitter_Connect_Admin {
 	/**
 	 * Slug of the plugin screen.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 *
 	 * @var      string
 	 */
@@ -45,7 +42,7 @@ class OF_Twitter_Connect_Admin {
 	 * Initialize the plugin by loading admin scripts & styles and adding a
 	 * settings page and menu.
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 */
 	private function __construct() {
 
@@ -66,7 +63,7 @@ class OF_Twitter_Connect_Admin {
 		 * - Rename "Plugin_Name" to the name of your initial plugin class
 		 *
 		 */
-		$plugin = OF_Twitter_Connect::get_instance();
+		$plugin = of_social_connect::get_instance();
 		$this->plugin_slug = $plugin->get_plugin_slug();
 
 		// Load admin style sheet and JavaScript.
@@ -75,7 +72,7 @@ class OF_Twitter_Connect_Admin {
 
 		// Add the options page and menu item.
 		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
-		add_action( 'admin_init',  array( $this, 'register_of_twitter_connect_options') );
+		add_action( 'admin_init',  array( $this, 'register_of_social_connect_options') );
 
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_slug . '.php' );
@@ -95,7 +92,7 @@ class OF_Twitter_Connect_Admin {
 	/**
 	 * Return an instance of this class.
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 *
 	 * @return    object    A single instance of this class.
 	 */
@@ -125,7 +122,7 @@ class OF_Twitter_Connect_Admin {
 	 *
 	 * - Rename "Plugin_Name" to the name your plugin
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 *
 	 * @return    null    Return early if no settings page is registered.
 	 */
@@ -137,7 +134,7 @@ class OF_Twitter_Connect_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), OF_Twitter_Connect::VERSION );
+			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), of_social_connect::VERSION );
 		}
 
 	}
@@ -149,7 +146,7 @@ class OF_Twitter_Connect_Admin {
 	 *
 	 * - Rename "Plugin_Name" to the name your plugin
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 *
 	 * @return    null    Return early if no settings page is registered.
 	 */
@@ -161,7 +158,7 @@ class OF_Twitter_Connect_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), OF_Twitter_Connect::VERSION );
+			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), of_social_connect::VERSION );
 		}
 
 	}
@@ -169,7 +166,7 @@ class OF_Twitter_Connect_Admin {
 	/**
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function add_plugin_admin_menu() {
 
@@ -188,8 +185,8 @@ class OF_Twitter_Connect_Admin {
 		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
 		 */
 		$this->plugin_screen_hook_suffix = add_options_page(
-			__( 'Twitter Connect', $this->plugin_slug ),
-			__( 'Twitter Connect', $this->plugin_slug ),
+			__( 'Ollie Ford & Co Social Connect', $this->plugin_slug ),
+			__( 'OF Social Connect', $this->plugin_slug ),			
 			'manage_options',
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
@@ -200,7 +197,7 @@ class OF_Twitter_Connect_Admin {
 	/**
 	 * Render the settings page for this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function display_plugin_admin_page() {
 		include_once( 'views/admin.php' );
@@ -209,7 +206,7 @@ class OF_Twitter_Connect_Admin {
 	/**
 	 * Add settings action link to the plugins page.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function add_action_links( $links ) {
 
@@ -222,7 +219,7 @@ class OF_Twitter_Connect_Admin {
 
 	}
 
-	public function register_of_twitter_connect_options() {
+	public function register_of_social_connect_options() {
 	  add_settings_section(
 		  'of_twitter_credentials_setting_section',
 		  'Twitter API Credentials',
@@ -241,7 +238,7 @@ class OF_Twitter_Connect_Admin {
 	 *           Actions:    http://codex.wordpress.org/Plugin_API#Actions
 	 *           Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function action_method_name() {
 		// @TODO: Define your action hook callback here
@@ -254,7 +251,7 @@ class OF_Twitter_Connect_Admin {
 	 *           Filters: http://codex.wordpress.org/Plugin_API#Filters
 	 *           Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function filter_method_name() {
 		// @TODO: Define your filter hook callback here
