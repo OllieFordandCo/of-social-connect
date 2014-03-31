@@ -1,12 +1,12 @@
-=== Ollie Ford & Co Social Connect ===
-Contributors: olliefordandco
-Donate link: http://www.ollieford.co.uk/
-Tags: oauth, twitter, tweets, timeline, widget
-Requires at least: 3.8
-Tested up to: 3.8
-Stable tag: 0.1
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+=== Ollie Ford & Co Social Connect ===  
+Contributors: olliefordandco  
+Donate link: http://www.ollieford.co.uk/  
+Tags: oauth, twitter, tweets, timeline, widget  
+Requires at least: 3.8  
+Tested up to: 3.8  
+Stable tag: 0.1  
+License: GPLv2 or later  
+License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
 Plugin that uses the OAuth Library to help you connect with Social Network (currently only Twitter) and registers widgets and shortcodes to use on the front end of your website.
 
