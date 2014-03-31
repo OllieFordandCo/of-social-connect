@@ -368,4 +368,33 @@ class OF_Social_Connect {
 		endif;	
 	}
 
+	/**
+	 * Display time as {time} ago
+	 * http://css-tricks.com/snippets/php/time-ago-function/
+	 *
+	 * @since    0.1.0
+	 */
+	public function time_ago($time)
+	{
+	   $periods = array("second", "minute", "hour", "day", "week", "month", "year", "decade");
+	   $lengths = array("60","60","24","7","4.35","12","10");
+	
+	   $now = time();
+	
+		   $difference     = $now - $time;
+		   $tense         = "ago";
+	
+	   for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
+		   $difference /= $lengths[$j];
+	   }
+	
+	   $difference = round($difference);
+	
+	   if($difference != 1) {
+		   $periods[$j].= "s";
+	   }
+	
+	   return "$difference $periods[$j] ago";
+	}
+
 }

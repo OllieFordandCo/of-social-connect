@@ -1,1 +1,68 @@
 /* This stylesheet is used to style the public-facing components of the plugin. */
+
+/* Meta Icons */
+
+.tweet-list {
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
+
+.tweet-list .tweet-content {
+	font-size: 14px;
+}
+
+.tweet-list .tweet-meta {
+	font-size: 12px;
+}
+
+.tweet-list .tweet-intent a {
+	display: inline-block;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+
+.tweet-list .in-reply-to {
+	background: url('images/everything-spritev2.png') no-repeat -3px -1px;
+	width: 11px;
+	height: 15px;
+}
+
+.tweet-list .in-reply-to:hover {
+	background: url('images/everything-spritev2.png') no-repeat -19px -1px;
+	width: 11px;
+	height: 15px;
+}
+
+.tweet-list .retweet {
+	background: url('images/everything-spritev2.png') no-repeat -81px -1px;
+	width: 14px;
+	height: 15px;
+}
+
+.tweet-list .retweet:hover {
+	background: url('images/everything-spritev2.png') no-repeat -97px -1px;
+	width: 14px;
+	height: 15px;
+}
+
+.tweet-list .favorite {
+	background: url('images/everything-spritev2.png') no-repeat -33px -1px;
+	width: 15px;
+	height: 15px;
+}
+
+.tweet-list .favorite:hover {
+	background: url('images/everything-spritev2.png') no-repeat -49px -1px;
+	width: 15px;
+	height: 15px;
+}
