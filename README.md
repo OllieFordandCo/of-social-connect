@@ -2,7 +2,7 @@
 Contributors: olliefordandco
 Donate link: http://www.ollieford.co.uk/
 Tags: oauth, twitter, tweets, timeline, widget
-Requires at least: 3.8
+Requires at least: 3.7.1
 Tested up to: 3.8
 Stable tag: 0.1
 License: GPLv2 or later
