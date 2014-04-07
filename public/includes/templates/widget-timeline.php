@@ -2,7 +2,7 @@
 <?php
 foreach($tweets as $tweet):
 	$tweet_id = $tweet->id; ?>
-    <li class="tweet">
+    <li class="of-tweet">
     	<div id="tweet-<?php echo $tweet_id; ?>" class="tweet-content">
         	<?php echo $tweet->text; ?>
         </div>
