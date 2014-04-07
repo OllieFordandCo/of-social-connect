@@ -96,8 +96,19 @@ use OAuth\ServiceFactory;
 				$_GET['oauth_verifier'],
 				$token->getRequestTokenSecret()
 			);		
+
+			// Send a request now that we have access token
+    		$verify_credentials = json_decode($twitterService->request('account/verify_credentials.json'));				
+
+			$of_twitter_api = get_option('of_twitter_api');
+			if (isset($of_twitter_api)
+				&& is_array($of_twitter_api)
+			) {
+				$of_twitter_api['default_screen_name'] = $verify_credentials->screen_name;
+				update_option('of_twitter_api', $of_twitter_api);
+			}		
 				 
-			$url = admin_url('options-general.php?page=of_twitter_connect');
+			$url = admin_url('options-general.php?page=of_social_connect');
 			$string = '<script type="text/javascript">';
 			$string .= 'window.location = "' . $url . '"';
 			$string .= '</script>';
@@ -108,7 +119,7 @@ use OAuth\ServiceFactory;
 		
 			echo '<p>You\'ve authorised your account on Twitter.</p>';
 			
-			$deauthorize_url = admin_url('options-general.php?page=of_twitter_connect&deauthorise=true');
+			$deauthorize_url = admin_url('options-general.php?page=of_social_connect&deauthorise=true');
 	
 			echo '<a href="'.$deauthorize_url.'" class="button button-primary">Deauthorise your Twitter Account</a>';
 			

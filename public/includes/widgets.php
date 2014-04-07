@@ -66,13 +66,22 @@ class OF_Twitter_Timeline extends WP_Widget {
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form( $instance ) {
+		$of_twitter_api = get_option('of_twitter_api');
+		
+		if(!empty($of_twitter_api['default_screen_name'])) :
+			$default_screen_name = $of_twitter_api['default_screen_name'];
+		else :
+			$default_screen_name = 'olliefordandco';
+		endif;
+		
+		
 		if ( isset( $instance[ 'title' ] ) ) {
 			$title = $instance[ 'title' ];
 		}
 		else {
-			$title = __( 'New title', 'text_domain' );
+			$title = __( 'Twitter Timeline', 'text_domain' );
 		}
-		$screenname = isset($instance[ 'screenname' ]) ? $instance[ 'screenname' ] : 'madilaonline';
+		$screenname = isset($instance[ 'screenname' ]) ? $instance[ 'screenname' ] : $default_screen_name;
 		$no_tweets = isset($instance[ 'no_tweets' ]) ? $instance[ 'no_tweets' ] : 4;
 		?>
 		<p>
