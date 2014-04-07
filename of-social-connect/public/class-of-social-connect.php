@@ -78,8 +78,10 @@ class OF_Social_Connect {
 		/* Define custom functionality.
 		 * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 		 */
-		add_action( 'widgets_init', array( $this, 'OF_Social_Connect_widget_init' ) );
+		add_action( 'widgets_init', array( $this, 'of_social_connect_widget_init' ) );
 		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
+
+		add_shortcode( 'timeline_widget', array($this, 'of_social_connect_timeline_shortcode') );
 
 	}
 
@@ -288,13 +290,16 @@ class OF_Social_Connect {
 	 *
 	 * @since    0.1.0
 	 */
-	public function OF_Social_Connect_widget_init() {
-		$api_key = get_option('of_twitter_api_key');
-		$api_secret = get_option('of_twitter_api_secret'); 
+	public function of_social_connect_widget_init() {
+		
+		$twitter_api = get_option('of_twitter_api');		
+		$api_key = $twitter_api['key'];
+		$api_secret = $twitter_api['secret'];
+		
 		if(!empty($api_key) && !empty($api_secret)) :		
 			require_once( plugin_dir_path( __FILE__ ) . 'includes/widgets.php' );
 			register_widget( 'OF_Twitter_Timeline' );	
-		endif;	
+		endif;
 	}
 
 	/**
@@ -309,6 +314,7 @@ class OF_Social_Connect {
 	public function filter_method_name() {
 		// @TODO: Define your filter hook callback here
 	}
+
 
 	/**
 	 * Retrieve any tweets saves on the database.
@@ -367,7 +373,7 @@ class OF_Social_Connect {
 			
 		endif;	
 	}
-
+	
 	/**
 	 * Display time as {time} ago
 	 * http://css-tricks.com/snippets/php/time-ago-function/
@@ -395,6 +401,37 @@ class OF_Social_Connect {
 	   }
 	
 	   return "$difference $periods[$j] ago";
+	}
+
+	// [bartag foo="foo-value"]
+	function of_social_connect_timeline_shortcode( $atts ) {
+		extract( shortcode_atts( array(
+			'screen_name' => '',
+			'limit' => 5,
+		), $atts ) );
+		
+		if( $tweets = $this->retrieve_tweets($atts['screen_name'], $atts['limit']) ) :	
+						
+			$user_template = locate_template( 'of-social-connect/twitter/widget-timeline.php' );
+				
+			if (!empty( $user_template )) :
+					  
+				$template = include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
+				
+			else :			
+			
+				$template = include( plugin_dir_path( __FILE__ ) . 'includes/templates/widget-timeline.php' );
+				
+			endif;
+		
+		else :
+		
+			$template = 'Please, authorise your twitter account before retrieving tweets.';
+		
+		endif;
+
+		
+		return $template;
 	}
 
 }

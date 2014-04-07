@@ -45,7 +45,7 @@ class OF_Twitter_Timeline extends WP_Widget {
 				
 			else :			
 			
-				require_once( plugin_dir_path( __FILE__ ) . 'templates/widget-timeline.php' );
+				include( plugin_dir_path( __FILE__ ) . 'templates/widget-timeline.php' );
 				
 			endif;
 		

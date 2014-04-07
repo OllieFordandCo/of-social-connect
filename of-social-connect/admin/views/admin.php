@@ -110,28 +110,14 @@ use OAuth\ServiceFactory;
 			
 			$deauthorize_url = admin_url('options-general.php?page=of_twitter_connect&deauthorise=true');
 	
-			echo '<a href="'.$deauthorize_url.'" class="button button-primary">Deauthorise your Twitter Account</a>';	
+			echo '<a href="'.$deauthorize_url.'" class="button button-primary">Deauthorise your Twitter Account</a>';
+			
+			echo '<p>You can start using the Widgets, Shortcodes and Functions included with this plugin.</p>';	
 			
 			echo '<hr>';
 
 		
 		endif;	    
 		
-	endif;
-	if(!empty($api_key) && !empty($api_secret) && $authorised):
-	
-		$credentials = new Credentials(
-			$api_key,
-			$api_secret,
-			admin_url('options-general.php?page=of_twitter_connect')
-		);
-		$serviceFactory = new ServiceFactory();
-		$twitterService = $serviceFactory->createService('Twitter', $credentials, $storage);
-				 
-   		// Send a request now that we have access token
-    	$result = json_decode($twitterService->request('statuses/user_timeline.json?screen_name=andresfulla'));
-	
-		echo 'result: <pre>' . print_r($result, true) . '</pre>';	
-	
 	endif; ?>
 </div>
