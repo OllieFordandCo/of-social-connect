@@ -66,7 +66,7 @@ use OAuth\ServiceFactory;
 		$credentials = new Credentials(
 			$api_key,
 			$api_secret,
-			admin_url('options-general.php?page=of_twitter_connect&authorised=true')
+			admin_url('options-general.php?page=of_social_connect&authorised=true')
 		);
 		$serviceFactory = new ServiceFactory();
 		$twitterService = $serviceFactory->createService('Twitter', $credentials, $storage);
@@ -83,7 +83,7 @@ use OAuth\ServiceFactory;
 			$credentials = new Credentials(
 				$api_key,
 				$api_secret,
-				admin_url('options-general.php?page=of_twitter_connect&authorised=true')
+				admin_url('options-general.php?page=of_social_connect&authorised=true')
 			);
 			$serviceFactory = new ServiceFactory();
 			$twitterService = $serviceFactory->createService('Twitter', $credentials, $storage);
