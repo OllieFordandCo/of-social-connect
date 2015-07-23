@@ -229,6 +229,16 @@ class OF_Social_Connect_Admin {
 	  add_settings_field( 'of_twitter_api[key]', 'API key', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_twitter_credentials_setting_section', array( 'label_for' => 'of_twitter_api[key]', 'option_group' => 'of_twitter_api', 'index' => 'key' ) );
 	  add_settings_field( 'of_twitter_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_twitter_credentials_setting_section', array( 'label_for' => 'of_twitter_api[secret]', 'option_group' => 'of_twitter_api', 'index' => 'secret' ) );  	    
 	  register_setting( $this->plugin_slug, 'of_twitter_api' );
+	  
+	  add_settings_section(
+		  'of_instagram_credentials_setting_section',
+		  'Instagram API Credentials',
+		  array( $this, 'of_instagram_credentials_section_callback_function' ),
+		  $this->plugin_slug
+	  );	  	
+	  add_settings_field( 'of_instagram_api[key]', 'API key', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_instagram_credentials_setting_section', array( 'label_for' => 'of_instagram_api[key]', 'option_group' => 'of_instagram_api', 'index' => 'key' ) );
+	  add_settings_field( 'of_instagram_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_instagram_credentials_setting_section', array( 'label_for' => 'of_instagram_api[secret]', 'option_group' => 'of_instagram_api', 'index' => 'secret' ) );  	    
+	  register_setting( $this->plugin_slug, 'of_instagram_api' );	  
 	}
 
 	/**
@@ -260,6 +270,11 @@ class OF_Social_Connect_Admin {
 	function of_twitter_credentials_section_callback_function($arg) {
 	  // echo section intro text here
 	  echo '<p><strong>Feel lost?</strong> Find out about your API key and API secret in <a href="https://apps.twitter.com">Twitter Application Management</a> website</p>';
+	}
+
+	function of_instagram_credentials_section_callback_function($arg) {
+	  // echo section intro text here
+	  echo '<p><strong>Feel lost?</strong> Find out about your API key and API secret in <a href="https://instagram.com/developer/?hl=en">Instagram Developer</a> website</p>';
 	}
 	
 	function of_text_input_callback_function($arg) {

@@ -12,6 +12,11 @@ use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
 class Session implements TokenStorageInterface
 {
     /**
+     * @var bool
+     */
+    protected $startSession;
+
+    /**
      * @var string
      */
     protected $sessionVariableName;
@@ -31,11 +36,11 @@ class Session implements TokenStorageInterface
         $sessionVariableName = 'lusitanian_oauth_token',
         $stateVariableName = 'lusitanian_oauth_state'
     ) {
-		global $wp_session;
-        if ($startSession && !isset($wp_session)) {
+        if ($startSession && !isset($_SESSION)) {
             session_start();
         }
 
+        $this->startSession = $startSession;
         $this->sessionVariableName = $sessionVariableName;
         $this->stateVariableName = $stateVariableName;
         if (!isset($_SESSION[$sessionVariableName])) {
@@ -176,6 +181,8 @@ class Session implements TokenStorageInterface
 
     public function __destruct()
     {
-        session_write_close();
+        if ($this->startSession) {
+            session_write_close();
+        }
     }
 }

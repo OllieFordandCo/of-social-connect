@@ -15,26 +15,22 @@
 use OAuth\OAuth1\Service\Twitter;
 use OAuth\Common\Storage\WPDatabase;
 use OAuth\Common\Consumer\Credentials;
+use OAuth\Common\Exception\Exception;
 use OAuth\ServiceFactory;
+use OAuth\Common\Http\Uri\UriFactory;
+
+$uriFactory = new UriFactory();
+$currentUri = $uriFactory->createFromSuperGlobalArray($_SERVER);
+$currentUri->setQuery('');
 
 ?>
 
 <div class="wrap">
 
 	<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
-
-	<!-- @TODO: Provide markup for your options page here. -->
     
-    <p>This plugin allows you to connect with Twitter</p>
-    
-	<? //Check if user has already submitted the api key and secret
-	$twitter_api = get_option('of_twitter_api');
+    <p>This plugin allows you to connect with your Social Networks</p>
 
-	$api_key = $twitter_api['key'];
-	$api_secret = $twitter_api['secret'];
-	
-	$storage = new WPDatabase();
-	?>
     <div>
     <form method="post" action="options.php">
 		<?php settings_fields('of_social_connect'); ?>
@@ -42,93 +38,7 @@ use OAuth\ServiceFactory;
 		<?php submit_button( 'Save changes', 'primary', 'submit', true ); ?>
 	</form>
 	</div>
-
-    <hr>
-    <?php 
-
-	if(isset($_GET['deauthorise'])) :
-		
-		$storage->clearAuthorizationState('Twitter');
-		$storage->clearToken('Twitter');
-	
-	
-	endif;
-	
-	
-	$authorised = $storage->hasAccessToken('Twitter');
-	    
-	if(!empty($api_key) && !empty($api_secret)) :
-	//Let's do our Twitter stuff here
-		
-		if(!$authorised) :
-			
-		// Setup the credentials for the requests
-		$credentials = new Credentials(
-			$api_key,
-			$api_secret,
-			admin_url('options-general.php?page=of_social_connect&authorised=true')
-		);
-		$serviceFactory = new ServiceFactory();
-		$twitterService = $serviceFactory->createService('Twitter', $credentials, $storage);
-			
-		$token = $twitterService->requestRequestToken();
-		
-		$authorize_url = $twitterService->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
-
-		echo '<a href="'.$authorize_url.'" class="button button-primary">Authorise your Twitter Account</a>';		
-	
-		elseif(!empty($_GET['oauth_token'])):
-
-			// Setup the credentials for the requests
-			$credentials = new Credentials(
-				$api_key,
-				$api_secret,
-				admin_url('options-general.php?page=of_social_connect&authorised=true')
-			);
-			$serviceFactory = new ServiceFactory();
-			$twitterService = $serviceFactory->createService('Twitter', $credentials, $storage);
-
-			$token = $storage->retrieveAccessToken('Twitter');
-		
-			// This was a callback request from twitter, get the token
-			$twitterService->requestAccessToken(
-				$_GET['oauth_token'],
-				$_GET['oauth_verifier'],
-				$token->getRequestTokenSecret()
-			);		
-
-			// Send a request now that we have access token
-    		$verify_credentials = json_decode($twitterService->request('account/verify_credentials.json'));				
-
-			$of_twitter_api = get_option('of_twitter_api');
-			if (isset($of_twitter_api)
-				&& is_array($of_twitter_api)
-			) {
-				$of_twitter_api['default_screen_name'] = $verify_credentials->screen_name;
-				update_option('of_twitter_api', $of_twitter_api);
-			}		
-				 
-			$url = admin_url('options-general.php?page=of_social_connect');
-			$string = '<script type="text/javascript">';
-			$string .= 'window.location = "' . $url . '"';
-			$string .= '</script>';
-			
-			echo $string;
-				
-		else:
-		
-			echo '<p>You\'ve authorised your account on Twitter.</p>';
-			
-			$deauthorize_url = admin_url('options-general.php?page=of_social_connect&deauthorise=true');
-	
-			echo '<a href="'.$deauthorize_url.'" class="button button-primary">Deauthorise your Twitter Account</a>';
-			
-			echo '<p>You can start using the Widgets, Shortcodes and Functions included with this plugin.</p>';	
-			
-			echo '<hr>';
-
-		
-		endif;	    
-		
-	endif; ?>
+	<hr>
+	<?php include_once(__DIR__ .'/twitter.php'); ?>
+	<?php include_once(__DIR__ .'/instagram.php'); ?>
 </div>

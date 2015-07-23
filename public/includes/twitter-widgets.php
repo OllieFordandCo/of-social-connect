@@ -51,7 +51,7 @@ class OF_Twitter_Timeline extends WP_Widget {
 		
 		else :
 		
-			echo 'Please, authorise your twitter account before retrieving tweets.';
+			//echo 'Please, authorise your twitter account before retrieving tweets.';
 		
 		endif;
 		
@@ -66,12 +66,12 @@ class OF_Twitter_Timeline extends WP_Widget {
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form( $instance ) {
-		$of_instagram_api = get_option('of_instagram_api');
+		$of_twitter_api = get_option('of_twitter_api');
 		
-		if(!empty($of_instagram_api['default_user_id'])) :
-			$default_user_id = $of_instagram_api['default_user_id'];
+		if(!empty($of_twitter_api['default_screen_name'])) :
+			$default_screen_name = $of_twitter_api['default_screen_name'];
 		else :
-			$default_screen_name = 'olliefordandco';
+			$default_screen_name = 'RachelSermanni';
 		endif;
 		
 		
@@ -79,9 +79,9 @@ class OF_Twitter_Timeline extends WP_Widget {
 			$title = $instance[ 'title' ];
 		}
 		else {
-			$title = __( 'Instagram Timeline', 'text_domain' );
+			$title = __( 'Twitter Timeline', 'text_domain' );
 		}
-		$screenname = isset($instance[ 'user_id' ]) ? $instance[ 'user_id' ] : $default_screen_name;
+		$screenname = isset($instance[ 'default_screen_name' ]) ? $instance[ 'default_screen_name' ] : $default_screen_name;
 		$no_tweets = isset($instance[ 'no_tweets' ]) ? $instance[ 'no_tweets' ] : 4;
 		?>
 		<p>

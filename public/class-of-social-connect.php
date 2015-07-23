@@ -297,9 +297,19 @@ class OF_Social_Connect {
 		$api_secret = $twitter_api['secret'];
 		
 		if(!empty($api_key) && !empty($api_secret)) :		
-			require_once( plugin_dir_path( __FILE__ ) . 'includes/widgets.php' );
+			require_once( plugin_dir_path( __FILE__ ) . 'includes/twitter-widgets.php' );
 			register_widget( 'OF_Twitter_Timeline' );	
 		endif;
+
+		$instagram_api = get_option('of_instagram_api');		
+		$api_key = $instagram_api['key'];
+		$api_secret = $instagram_api['secret'];
+		
+		if(!empty($api_key) && !empty($api_secret)) :		
+			require_once( plugin_dir_path( __FILE__ ) . 'includes/instagram-widgets.php' );
+			register_widget( 'OF_Instagram_Timeline' );	
+		endif;
+		
 	}
 
 	/**
@@ -315,6 +325,61 @@ class OF_Social_Connect {
 		// @TODO: Define your filter hook callback here
 	}
 
+	/**
+	 * Retrieve any tweets saves on the database.
+	 *
+	 * @since    0.1.0
+	 */
+	public function retrieve_instagram_feed($user_id, $no_pics) {
+
+		//Check if user has already submitted the api key and secret
+		$of_instagram_api = get_option('of_instagram_api');
+		
+		$api_key = $of_instagram_api['key'];
+		$api_secret = $of_instagram_api['secret'];
+
+		if(!empty($api_key) && !empty($api_secret)) :
+		
+			$update = false;
+			if ( ! ( $result = get_transient( 'of_instagram_timeline_widget' ) ) ) {
+				$update = true;
+			};
+			
+			$screenname_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
+			$no_pics_changed = (isset($result['no_pics'])) ? $result['no_pics'] : $no_pics;
+			
+			if($user_id_changed !== $user_id || $no_pics_changed !== $no_pics) {
+				$update = true;
+			}
+			
+			if($update) {
+				
+				$storage = new OAuth\Common\Storage\WPDatabase();
+			
+				$credentials = new OAuth\Common\Consumer\Credentials(
+					$api_key,
+					$api_secret,
+					admin_url('options-general.php?page=of_social_connect&authorised_instagram=true')
+				);
+				$serviceFactory = new OAuth\ServiceFactory();
+				$instagramService = $serviceFactory->createService('Instagram', $credentials, $storage);
+				
+				$result['user_id'] = $user_id;
+				$result['no_pics'] = $no_pics;
+				$result['instagram_feed'] = json_decode($instagramService->request('users/'.$user_id.'/media/recent/?count='.$no_pics));
+				
+				set_transient(  'of_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
+			}
+
+			return $result['instagram_feed'];	
+		
+		else :
+			
+			return false;
+			
+		endif;
+
+	}
 
 	/**
 	 * Retrieve any tweets saves on the database.
@@ -332,6 +397,7 @@ class OF_Social_Connect {
 		if(!empty($api_key) && !empty($api_secret)) :
 		
 			$update = false;
+			
 			if ( ! ( $result = get_transient( 'of_timeline_widget' ) ) ) {
 				$update = true;
 			};
@@ -362,7 +428,7 @@ class OF_Social_Connect {
 				$result['no_tweets'] = $no_tweets;
 				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$screenname.'&count='.$no_tweets));
 				
-				set_transient(  $screenname.'_of_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
+				set_transient( 'of_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
 			}
 
 			return $result['tweets'];	
