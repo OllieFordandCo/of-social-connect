@@ -32,8 +32,9 @@ class OF_Twitter_Timeline extends WP_Widget {
     	$screenname = $instance['screenname'];
 
 		echo $args['before_widget'];
+		$follow = '<a href="https://twitter.com/intent/follow?original_referer=http%3A%2F%2Fwildingsmusic.com&region=follow_link&screen_name='.$screenname.'&tw_p=followbutton" class="twitter-follow">Follow us</a>';
 		if ( ! empty( $title ) )
-			echo $args['before_title'] . $title . $args['after_title'];
+			echo $args['before_title'] . $title . $follow . $args['after_title'];
 
 		if( $tweets = OF_Social_Connect::retrieve_tweets($screenname, $no_tweets) ) :	
 						
@@ -101,6 +102,9 @@ class OF_Twitter_Timeline extends WP_Widget {
             <option value="4"<?php echo ($no_tweets == 4) ? ' selected': ''; ?>>4</option>
             <option value="5"<?php echo ($no_tweets == 5) ? ' selected': ''; ?>>5</option>
             <option value="6"<?php echo ($no_tweets == 6) ? ' selected': ''; ?>>6</option>
+            <option value="7"<?php echo ($no_tweets == 7) ? ' selected': ''; ?>>7</option>
+            <option value="8"<?php echo ($no_tweets == 8) ? ' selected': ''; ?>>8</option>
+            <option value="9"<?php echo ($no_tweets == 9) ? ' selected': ''; ?>>9</option>            
         </select>
 		</p>              
 		<?php 

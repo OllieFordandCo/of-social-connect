@@ -386,7 +386,7 @@ class OF_Social_Connect {
 	 *
 	 * @since    0.1.0
 	 */
-	public function retrieve_tweets($screenname, $no_tweets) {
+	public function retrieve_tweets($default_screen_name, $no_tweets) {
 
 		//Check if user has already submitted the api key and secret
 		$twitter_api = get_option('of_twitter_api');
@@ -402,10 +402,10 @@ class OF_Social_Connect {
 				$update = true;
 			};
 			
-			$screenname_changed = (isset($result['screenname'])) ? $result['screenname'] : $screenname;
+			$default_screen_name_changed = (isset($result['default_screen_name'])) ? $result['default_screen_name'] : $screenname;
 			$no_tweets_changed = (isset($result['no_tweets'])) ? $result['no_tweets'] : $no_tweets;
 			
-			if($screenname_changed !== $screenname || $no_tweets_changed !== $no_tweets) {
+			if($default_screen_name_changed !== $default_screen_name || $no_tweets_changed !== $no_tweets) {
 				$update = true;
 			}
 			
@@ -424,9 +424,9 @@ class OF_Social_Connect {
 				$serviceFactory = new OAuth\ServiceFactory();
 				$twitterService = $serviceFactory->createService('twitter', $credentials, $storage);
 				
-				$result['screnname'] = $screenname;
+				$result['default_screen_name'] = $default_screen_name;
 				$result['no_tweets'] = $no_tweets;
-				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$screenname.'&count='.$no_tweets));
+				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$default_screen_name.'&count='.$no_tweets));
 				
 				set_transient( 'of_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
 			}

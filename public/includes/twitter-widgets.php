@@ -29,13 +29,14 @@ class OF_Twitter_Timeline extends WP_Widget {
 		
 		$title = apply_filters( 'widget_title', $instance['title'] );
 		$no_tweets = $instance['no_tweets'];
-    	$screenname = $instance['screenname'];
+    	$default_screen_name = $instance['default_screen_name'];
 
 		echo $args['before_widget'];
+		$follow = '<a href="https://twitter.com/intent/follow?original_referer=http%3A%2F%2Fwildingsmusic.com&region=follow_link&screen_name='.$default_screen_name.'&tw_p=followbutton" class="twitter-follow btn-border"><i class="fa fa-twitter"></i> Follow us</a>';
 		if ( ! empty( $title ) )
-			echo $args['before_title'] . $title . $args['after_title'];
+			echo $args['before_title'] . $title . $follow . $args['after_title'];
 
-		if( $tweets = OF_Social_Connect::retrieve_tweets($screenname, $no_tweets) ) :	
+		if( $tweets = OF_Social_Connect::retrieve_tweets($default_screen_name, $no_tweets) ) :	
 						
 			$user_template = locate_template( 'of-social-connect/twitter/widget-timeline.php' );
 				
@@ -71,7 +72,7 @@ class OF_Twitter_Timeline extends WP_Widget {
 		if(!empty($of_twitter_api['default_screen_name'])) :
 			$default_screen_name = $of_twitter_api['default_screen_name'];
 		else :
-			$default_screen_name = 'RachelSermanni';
+			$default_screen_name = 'olliefordandco';
 		endif;
 		
 		
@@ -81,7 +82,7 @@ class OF_Twitter_Timeline extends WP_Widget {
 		else {
 			$title = __( 'Twitter Timeline', 'text_domain' );
 		}
-		$screenname = isset($instance[ 'default_screen_name' ]) ? $instance[ 'default_screen_name' ] : $default_screen_name;
+		$default_screen_name = isset($instance[ 'default_screen_name' ]) ? $instance[ 'default_screen_name' ] : $default_screen_name;
 		$no_tweets = isset($instance[ 'no_tweets' ]) ? $instance[ 'no_tweets' ] : 4;
 		?>
 		<p>
@@ -89,8 +90,8 @@ class OF_Twitter_Timeline extends WP_Widget {
 		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 		</p>
 		<p>
-		<label for="<?php echo $this->get_field_id( 'screenname' ); ?>"><?php _e( 'Screenname:' ); ?></label> 
-		<input class="widefat" id="<?php echo $this->get_field_id( 'screenname' ); ?>" name="<?php echo $this->get_field_name( 'screenname' ); ?>" type="text" value="<?php echo esc_attr( $screenname ); ?>">
+		<label for="<?php echo $this->get_field_id( 'default_screen_name' ); ?>"><?php _e( 'Screenname:' ); ?></label> 
+		<input class="widefat" id="<?php echo $this->get_field_id( 'default_screen_name' ); ?>" name="<?php echo $this->get_field_name( 'default_screen_name' ); ?>" type="text" value="<?php echo esc_attr( $default_screen_name ); ?>">
 		</p>  
 		<p>
 		<label for="<?php echo $this->get_field_id( 'no_tweets' ); ?>"><?php _e( 'Number of Tweets:' ); ?></label> 
@@ -119,7 +120,7 @@ class OF_Twitter_Timeline extends WP_Widget {
 	public function update( $new_instance, $old_instance ) {
 		$instance = array();
 		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
-		$instance['screenname'] = ( ! empty( $new_instance['screenname'] ) ) ? strip_tags( $new_instance['screenname'] ) : '';
+		$instance['default_screen_name'] = ( ! empty( $new_instance['default_screen_name'] ) ) ? strip_tags( $new_instance['default_screen_name'] ) : '';
 		$instance['no_tweets'] = ( ! empty( $new_instance['no_tweets'] ) ) ? strip_tags( $new_instance['no_tweets'] ) : '';
 
 		return $instance;

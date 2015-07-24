@@ -100,6 +100,9 @@ class OF_Instagram_Timeline extends WP_Widget {
             <option value="4"<?php echo ($no_pics == 4) ? ' selected': ''; ?>>4</option>
             <option value="5"<?php echo ($no_pics == 5) ? ' selected': ''; ?>>5</option>
             <option value="6"<?php echo ($no_pics == 6) ? ' selected': ''; ?>>6</option>
+            <option value="7"<?php echo ($no_pics == 7) ? ' selected': ''; ?>>7</option>
+            <option value="8"<?php echo ($no_pics == 8) ? ' selected': ''; ?>>8</option>
+            <option value="9"<?php echo ($no_pics == 9) ? ' selected': ''; ?>>9</option>              
         </select>
 		</p>              
 		<?php 
