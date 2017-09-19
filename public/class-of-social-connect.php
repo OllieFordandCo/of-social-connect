@@ -386,7 +386,7 @@ class OF_Social_Connect {
 	 *
 	 * @since    0.1.0
 	 */
-	public function retrieve_tweets($default_screen_name, $no_tweets) {
+	public static function retrieve_tweets($default_screen_name, $no_tweets) {
 
 		//Check if user has already submitted the api key and secret
 		$twitter_api = get_option('of_twitter_api');
@@ -446,7 +446,7 @@ class OF_Social_Connect {
 	 *
 	 * @since    0.1.0
 	 */
-	public function time_ago($time)
+	public static function time_ago($time)
 	{
 	   $periods = array("second", "minute", "hour", "day", "week", "month", "year", "decade");
 	   $lengths = array("60","60","24","7","4.35","12","10");
@@ -482,7 +482,7 @@ class OF_Social_Connect {
 				
 			if (!empty( $user_template )) :
 					  
-				$template = include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
+				$template = include(locate_template( 'social/twitter/widget-timeline.php'));
 				
 			else :			
 			
