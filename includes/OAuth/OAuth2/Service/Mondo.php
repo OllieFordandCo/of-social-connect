@@ -10,25 +10,8 @@ use OAuth\Common\Http\Client\ClientInterface;
 use OAuth\Common\Storage\TokenStorageInterface;
 use OAuth\Common\Http\Uri\UriInterface;
 
-class Spotify extends AbstractService
+class Mondo extends AbstractService
 {
-    /**
-     * Scopes
-     *
-     * @var string
-     */
-    const SCOPE_PLAYLIST_MODIFY_PUBLIC = 'playlist-modify-public';
-    const SCOPE_PLAYLIST_MODIFY_PRIVATE = 'playlist-modify-private';
-    const SCOPE_PLAYLIST_READ_PRIVATE = 'playlist-read-private';
-    const SCOPE_PLAYLIST_READ_COLABORATIVE = 'playlist-read-collaborative';
-    const SCOPE_STREAMING = 'streaming';
-    const SCOPE_USER_LIBRARY_MODIFY = 'user-library-modify';
-    const SCOPE_USER_LIBRARY_READ = 'user-library-read';
-    const SCOPE_USER_READ_PRIVATE = 'user-read-private';
-    const SCOPE_USER_READ_EMAIL = 'user-read-email';
-    const SCOPE_USER_READ_BIRTHDAY = 'user-read-birthdate';
-    const SCOPE_USER_READ_FOLLOW = 'user-follow-read';
-
     public function __construct(
         CredentialsInterface $credentials,
         ClientInterface $httpClient,
@@ -39,7 +22,7 @@ class Spotify extends AbstractService
         parent::__construct($credentials, $httpClient, $storage, $scopes, $baseApiUri, true);
 
         if (null === $baseApiUri) {
-            $this->baseApiUri = new Uri('https://api.spotify.com/v1/');
+            $this->baseApiUri = new Uri('https://api.getmondo.co.uk');
         }
     }
 
@@ -48,7 +31,7 @@ class Spotify extends AbstractService
      */
     public function getAuthorizationEndpoint()
     {
-        return new Uri('https://accounts.spotify.com/authorize');
+        return new Uri('https://auth.getmondo.co.uk');
     }
 
     /**
@@ -56,7 +39,7 @@ class Spotify extends AbstractService
      */
     public function getAccessTokenEndpoint()
     {
-        return new Uri('https://accounts.spotify.com/api/token');
+        return new Uri('https://api.getmondo.co.uk/oauth2/token');
     }
 
     /**
@@ -99,14 +82,5 @@ class Spotify extends AbstractService
         $token->setExtraParams($data);
 
         return $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getExtraOAuthHeaders()
-    {
-        return array('Authorization' => 'Basic ' .
-            base64_encode($this->credentials->getConsumerId() . ':' . $this->credentials->getConsumerSecret()));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace OAuth\OAuth2\Service;
 
+use OAuth\Common\Exception\Exception;
 use OAuth\OAuth2\Token\StdOAuth2Token;
 use OAuth\Common\Http\Exception\TokenResponseException;
 use OAuth\Common\Http\Uri\Uri;
@@ -10,24 +11,27 @@ use OAuth\Common\Http\Client\ClientInterface;
 use OAuth\Common\Storage\TokenStorageInterface;
 use OAuth\Common\Http\Uri\UriInterface;
 
-class Spotify extends AbstractService
+class DeviantArt extends AbstractService
 {
     /**
-     * Scopes
-     *
-     * @var string
+     * DeviantArt www url - used to build dialog urls
      */
-    const SCOPE_PLAYLIST_MODIFY_PUBLIC = 'playlist-modify-public';
-    const SCOPE_PLAYLIST_MODIFY_PRIVATE = 'playlist-modify-private';
-    const SCOPE_PLAYLIST_READ_PRIVATE = 'playlist-read-private';
-    const SCOPE_PLAYLIST_READ_COLABORATIVE = 'playlist-read-collaborative';
-    const SCOPE_STREAMING = 'streaming';
-    const SCOPE_USER_LIBRARY_MODIFY = 'user-library-modify';
-    const SCOPE_USER_LIBRARY_READ = 'user-library-read';
-    const SCOPE_USER_READ_PRIVATE = 'user-read-private';
-    const SCOPE_USER_READ_EMAIL = 'user-read-email';
-    const SCOPE_USER_READ_BIRTHDAY = 'user-read-birthdate';
-    const SCOPE_USER_READ_FOLLOW = 'user-follow-read';
+    const WWW_URL = 'https://www.deviantart.com/';
+
+    /**
+     * Defined scopes
+     *
+     * If you don't think this is scary you should not be allowed on the web at all
+     *
+     * @link https://www.deviantart.com/developers/authentication
+     * @link https://www.deviantart.com/developers/http/v1/20150217
+     */
+    const SCOPE_FEED                       = 'feed';
+    const SCOPE_BROWSE                     = 'browse';
+    const SCOPE_COMMENT                    = 'comment.post';
+    const SCOPE_STASH                      = 'stash';
+    const SCOPE_USER                       = 'user';
+    const SCOPE_USERMANAGE                 = 'user.manage';
 
     public function __construct(
         CredentialsInterface $credentials,
@@ -36,10 +40,10 @@ class Spotify extends AbstractService
         $scopes = array(),
         UriInterface $baseApiUri = null
     ) {
-        parent::__construct($credentials, $httpClient, $storage, $scopes, $baseApiUri, true);
+        parent::__construct($credentials, $httpClient, $storage, $scopes, $baseApiUri);
 
         if (null === $baseApiUri) {
-            $this->baseApiUri = new Uri('https://api.spotify.com/v1/');
+            $this->baseApiUri = new Uri('https://www.deviantart.com/api/v1/oauth2/');
         }
     }
 
@@ -48,7 +52,7 @@ class Spotify extends AbstractService
      */
     public function getAuthorizationEndpoint()
     {
-        return new Uri('https://accounts.spotify.com/authorize');
+        return new Uri('https://www.deviantart.com/oauth2/authorize');
     }
 
     /**
@@ -56,15 +60,7 @@ class Spotify extends AbstractService
      */
     public function getAccessTokenEndpoint()
     {
-        return new Uri('https://accounts.spotify.com/api/token');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthorizationMethod()
-    {
-        return static::AUTHORIZATION_METHOD_HEADER_BEARER;
+        return new Uri('https://www.deviantart.com/oauth2/token');
     }
 
     /**
@@ -72,6 +68,7 @@ class Spotify extends AbstractService
      */
     protected function parseAccessTokenResponse($responseBody)
     {
+
         $data = json_decode($responseBody, true);
 
         if (null === $data || !is_array($data)) {
@@ -80,13 +77,11 @@ class Spotify extends AbstractService
             throw new TokenResponseException('Error in retrieving token: "' . $data['error'] . '"');
         }
 
-
         $token = new StdOAuth2Token();
         $token->setAccessToken($data['access_token']);
 
         if (isset($data['expires_in'])) {
-            $token->setLifetime($data['expires_in']);
-            unset($data['expires_in']);
+            $token->setLifeTime($data['expires_in']);
         }
 
         if (isset($data['refresh_token'])) {
@@ -95,18 +90,10 @@ class Spotify extends AbstractService
         }
 
         unset($data['access_token']);
+        unset($data['expires_in']);
 
         $token->setExtraParams($data);
 
         return $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getExtraOAuthHeaders()
-    {
-        return array('Authorization' => 'Basic ' .
-            base64_encode($this->credentials->getConsumerId() . ':' . $this->credentials->getConsumerSecret()));
     }
 }

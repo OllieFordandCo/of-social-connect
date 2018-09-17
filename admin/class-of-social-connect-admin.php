@@ -238,7 +238,18 @@ class OF_Social_Connect_Admin {
 	  );	  	
 	  add_settings_field( 'of_instagram_api[key]', 'API key', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_instagram_credentials_setting_section', array( 'label_for' => 'of_instagram_api[key]', 'option_group' => 'of_instagram_api', 'index' => 'key' ) );
 	  add_settings_field( 'of_instagram_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_instagram_credentials_setting_section', array( 'label_for' => 'of_instagram_api[secret]', 'option_group' => 'of_instagram_api', 'index' => 'secret' ) );  	    
-	  register_setting( $this->plugin_slug, 'of_instagram_api' );	  
+	  register_setting( $this->plugin_slug, 'of_instagram_api' );
+
+		add_settings_section(
+			'of_facebook_credentials_setting_section',
+			'Facebook API Credentials',
+			array( $this, 'of_facebook_credentials_section_callback_function' ),
+			$this->plugin_slug
+		);
+		add_settings_field( 'of_facebook_api[key]', 'App ID', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_facebook_credentials_setting_section', array( 'label_for' => 'of_facebook_api[key]', 'option_group' => 'of_facebook_api', 'index' => 'key' ) );
+		add_settings_field( 'of_facebook_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_facebook_credentials_setting_section', array( 'label_for' => 'of_facebook_api[secret]', 'option_group' => 'of_facebook_api', 'index' => 'secret' ) );
+		register_setting( $this->plugin_slug, 'of_facebook_api' );
+
 	}
 
 	/**
@@ -276,7 +287,11 @@ class OF_Social_Connect_Admin {
 	  // echo section intro text here
 	  echo '<p><strong>Feel lost?</strong> Find out about your API key and API secret in <a href="https://instagram.com/developer/?hl=en">Instagram Developer</a> website</p>';
 	}
-	
+
+	function of_facebook_credentials_section_callback_function($arg) {
+		// echo section intro text here
+	}
+
 	function of_text_input_callback_function($arg) {
 			$id = $arg['label_for'];
 			$option = get_option($arg['option_group']);

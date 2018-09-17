@@ -269,7 +269,7 @@ class OF_Social_Connect {
 	 * @since    0.1.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->plugin_slug . '-plugin-styles', plugins_url( 'assets/css/public.css', __FILE__ ), array(), self::VERSION );
+		//wp_enqueue_style( $this->plugin_slug . '-plugin-styles', plugins_url( 'assets/css/public.css', __FILE__ ), array(), self::VERSION );
 	}
 
 	/**
@@ -278,7 +278,7 @@ class OF_Social_Connect {
 	 * @since    0.1.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+		//wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 	}
 
 	/**
@@ -325,15 +325,140 @@ class OF_Social_Connect {
 		// @TODO: Define your filter hook callback here
 	}
 
+	public static function retrieve_all_social() {
+
+
+		//if (  $social = get_transient( 'ccc_retrieve_all_social_feeds' )  ) {
+			$social = array();
+			$insta = array();
+			$twitter = array();
+			$facebook = array();
+
+			try {
+
+				$feed = OF_Social_Connect::retrieve_facebook_posts('CCreative4', 8, true);
+				if(isset($feed->data)) {
+					foreach($feed->data as $asset) {
+						$default_asset = new OF_Social_Asset();
+						$asset = $default_asset->return_normalized_asset($asset, 'facebook');
+						$facebook[$asset->date] = $asset;
+					}
+				}
+				$social['facebook'] = $facebook;
+			} catch(Exception $e) {
+				$social['facebook'] = array();
+			}
+
+
+			try {
+
+				$feed = OF_Social_Connect::retrieve_instagram_feed('6380557924', 2);
+
+				foreach ($feed as $asset) {
+					$default_asset = new OF_Social_Asset();
+					$asset = $default_asset->return_normalized_asset($asset, 'instagram', true);
+					$insta[$asset->date] = $asset;
+				}
+				$social['instagram'] = $insta;
+			} catch(Exception $e) {
+				$social['instagram'] = array();
+			}
+
+			try {
+
+				$feed = OF_Social_Connect::retrieve_tweets('CCreative4', 5);
+
+				foreach ($feed as $asset) {
+					$default_asset = new OF_Social_Asset();
+					$asset = $default_asset->return_normalized_asset($asset, 'twitter', true);
+					$twitter[$asset->date] = $asset;
+				}
+				//echo '<div class="d-none">' . var_dump($feed) . '</div>';
+				$social['twitter'] = $twitter;
+			} catch(Exception $e) {
+				$social['twitter'] = array();
+			}
+
+			//set_transient(  'ccc_retrieve_all_social_feeds', $social, 30 * MINUTE_IN_SECONDS );
+
+		//};
+
+		return $social;
+
+	}
+
+
 	/**
 	 * Retrieve any tweets saves on the database.
 	 *
 	 * @since    0.1.0
 	 */
-	public function retrieve_instagram_feed($user_id, $no_pics) {
+	public static function retrieve_facebook_posts($user_id, $no_pics, $force_update = false) {
+
+		//Check if user has already submitted the api key and secret
+		$of_fb_api = get_option('of_facebook_api');
+
+
+		$api_key = $of_fb_api['key'];
+		$api_secret = $of_fb_api['secret'];
+
+		if(!empty($api_key) && !empty($api_secret)) :
+
+			$update = false;
+			if ( ! ( $result = get_transient( 'of_facebook_timeline_widget' ) ) ) {
+				$update = true;
+			};
+
+			$user_id_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
+			$no_pics_changed = (isset($result['no_pics'])) ? $result['no_pics'] : $no_pics;
+
+			if($force_update || $user_id_changed !== $user_id || $no_pics_changed !== $no_pics) {
+				$update = true;
+			}
+
+			if($update) {
+
+				$storage = new OAuth\Common\Storage\WPDatabase();
+				$token = $storage->retrieveAccessToken('Facebook');
+
+
+				$credentials = new OAuth\Common\Consumer\Credentials(
+					$api_key,
+					$api_secret,
+					admin_url('options-general.php?page=of_social_connect&authorised_facebook=true')
+				);
+
+
+				$serviceFactory = new OAuth\ServiceFactory();
+				$facebookService = $serviceFactory->createService('Facebook', $credentials, $storage);
+
+				$result['user_id'] = $user_id;
+				$result['no_pics'] = $no_pics;
+				$result['facebook_posts'] = json_decode($facebookService->request('/v2.12/'.$user_id.'/posts?limit='.$no_pics.'&fields=id,name,type,created_time,story,message,full_picture,is_hidden,link,permalink_url,caption&access_token='.$token->getAccessToken()));
+
+				set_transient(  'of_facebook_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
+			}
+
+			return $result['facebook_posts'];
+
+		else :
+
+			return false;
+
+		endif;
+
+	}
+
+	/**
+	 * Retrieve any tweets saves on the database.
+	 *
+	 * @since    0.1.0
+	 */
+	public static function retrieve_instagram_feed($user_id, $no_pics, $force_update = false) {
 
 		//Check if user has already submitted the api key and secret
 		$of_instagram_api = get_option('of_instagram_api');
+
 		
 		$api_key = $of_instagram_api['key'];
 		$api_secret = $of_instagram_api['secret'];
@@ -344,18 +469,18 @@ class OF_Social_Connect {
 			if ( ! ( $result = get_transient( 'of_instagram_timeline_widget' ) ) ) {
 				$update = true;
 			};
-			
-			$screenname_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
+
+			$user_id_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
 			$no_pics_changed = (isset($result['no_pics'])) ? $result['no_pics'] : $no_pics;
 			
-			if($user_id_changed !== $user_id || $no_pics_changed !== $no_pics) {
+			if($force_update || $user_id_changed !== $user_id || $no_pics_changed !== $no_pics) {
 				$update = true;
 			}
 			
 			if($update) {
 				
 				$storage = new OAuth\Common\Storage\WPDatabase();
-			
+
 				$credentials = new OAuth\Common\Consumer\Credentials(
 					$api_key,
 					$api_secret,
@@ -363,15 +488,15 @@ class OF_Social_Connect {
 				);
 				$serviceFactory = new OAuth\ServiceFactory();
 				$instagramService = $serviceFactory->createService('Instagram', $credentials, $storage);
-				
+
 				$result['user_id'] = $user_id;
 				$result['no_pics'] = $no_pics;
 				$result['instagram_feed'] = json_decode($instagramService->request('users/'.$user_id.'/media/recent/?count='.$no_pics));
-				
+
 				set_transient(  'of_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
 			}
 
-			return $result['instagram_feed'];	
+			return (property_exists($result['instagram_feed'],'data')) ? $result['instagram_feed']->data : $result['instagram_feed'];
 		
 		else :
 			
@@ -386,7 +511,7 @@ class OF_Social_Connect {
 	 *
 	 * @since    0.1.0
 	 */
-	public static function retrieve_tweets($default_screen_name, $no_tweets) {
+	public static function retrieve_tweets($default_screen_name, $no_tweets, $force_update = false) {
 
 		//Check if user has already submitted the api key and secret
 		$twitter_api = get_option('of_twitter_api');
@@ -402,17 +527,14 @@ class OF_Social_Connect {
 				$update = true;
 			};
 			
-			$default_screen_name_changed = (isset($result['default_screen_name'])) ? $result['default_screen_name'] : $screenname;
+			$default_screen_name_changed = (isset($result['default_screen_name'])) ? $result['default_screen_name'] : $default_screen_name;
 			$no_tweets_changed = (isset($result['no_tweets'])) ? $result['no_tweets'] : $no_tweets;
 			
-			if($default_screen_name_changed !== $default_screen_name || $no_tweets_changed !== $no_tweets) {
+			if($force_update || $default_screen_name_changed !== $default_screen_name || $no_tweets_changed !== $no_tweets) {
 				$update = true;
 			}
 			
-			$message = 'Transient Call';
-			
 			if($update) {
-				$message = 'Twitter Call';
 				
 				$storage = new OAuth\Common\Storage\WPDatabase();
 			
@@ -426,7 +548,7 @@ class OF_Social_Connect {
 				
 				$result['default_screen_name'] = $default_screen_name;
 				$result['no_tweets'] = $no_tweets;
-				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$default_screen_name.'&count='.$no_tweets));
+				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$default_screen_name_changed.'&count='.$no_tweets.'&tweet_mode=extended&include_rts=true&exclude_replies=true'));
 				
 				set_transient( 'of_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
 			}
@@ -478,11 +600,11 @@ class OF_Social_Connect {
 		
 		if( $tweets = $this->retrieve_tweets($atts['screen_name'], $atts['limit']) ) :	
 						
-			$user_template = locate_template( 'of-social-connect/twitter/widget-timeline.php' );
-				
+			$user_template = locate_template( 'social/twitter-widget.php' );
+
 			if (!empty( $user_template )) :
 					  
-				$template = include(locate_template( 'social/twitter/widget-timeline.php'));
+				$template = include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
 				
 			else :			
 			

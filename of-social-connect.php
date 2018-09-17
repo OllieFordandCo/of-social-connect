@@ -40,6 +40,7 @@ if ( ! defined( 'WPINC' ) ) {
  *
  */
 require_once( plugin_dir_path( __FILE__ ) . 'public/class-of-social-connect.php' );
+require_once (plugin_dir_path(__FILE__) . 'public/class-of-social-asset.php');
 require_once (plugin_dir_path( __FILE__ ) . 'includes/OAuth/bootstrap.php');
 
 /*

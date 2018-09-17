@@ -41,4 +41,5 @@ $currentUri->setQuery('');
 	<hr>
 	<?php include_once(__DIR__ .'/twitter.php'); ?>
 	<?php include_once(__DIR__ .'/instagram.php'); ?>
+	<?php include_once(__DIR__ .'/facebook.php'); ?>
 </div>

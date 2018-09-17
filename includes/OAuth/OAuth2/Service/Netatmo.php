@@ -1,4 +1,11 @@
 <?php
+/**
+ * Netatmo service.
+ *
+ * @author  Pedro Amorim <contact@pamorim.fr>
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link    https://dev.netatmo.com/doc/
+ */
 
 namespace OAuth\OAuth2\Service;
 
@@ -10,24 +17,25 @@ use OAuth\Common\Http\Client\ClientInterface;
 use OAuth\Common\Storage\TokenStorageInterface;
 use OAuth\Common\Http\Uri\UriInterface;
 
-class Spotify extends AbstractService
+/**
+ * Netatmo service.
+ *
+ * @author  Pedro Amorim <contact@pamorim.fr>
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link    https://dev.netatmo.com/doc/
+ */
+class Netatmo extends AbstractService
 {
-    /**
-     * Scopes
-     *
-     * @var string
-     */
-    const SCOPE_PLAYLIST_MODIFY_PUBLIC = 'playlist-modify-public';
-    const SCOPE_PLAYLIST_MODIFY_PRIVATE = 'playlist-modify-private';
-    const SCOPE_PLAYLIST_READ_PRIVATE = 'playlist-read-private';
-    const SCOPE_PLAYLIST_READ_COLABORATIVE = 'playlist-read-collaborative';
-    const SCOPE_STREAMING = 'streaming';
-    const SCOPE_USER_LIBRARY_MODIFY = 'user-library-modify';
-    const SCOPE_USER_LIBRARY_READ = 'user-library-read';
-    const SCOPE_USER_READ_PRIVATE = 'user-read-private';
-    const SCOPE_USER_READ_EMAIL = 'user-read-email';
-    const SCOPE_USER_READ_BIRTHDAY = 'user-read-birthdate';
-    const SCOPE_USER_READ_FOLLOW = 'user-follow-read';
+
+    // SCOPES
+    // @link https://dev.netatmo.com/doc/authentication/scopes
+
+    // Used to read weather station's data (devicelist, getmeasure)
+    const SCOPE_STATION_READ        = 'read_station';
+    // Used to read thermostat's data (devicelist, getmeasure, getthermstate)
+    const SCOPE_THERMOSTAT_READ     = 'read_thermostat';
+    // Used to configure the thermostat (syncschedule, setthermpoint)
+    const SCOPE_THERMOSTAT_WRITE    = 'write_thermostat';
 
     public function __construct(
         CredentialsInterface $credentials,
@@ -36,10 +44,17 @@ class Spotify extends AbstractService
         $scopes = array(),
         UriInterface $baseApiUri = null
     ) {
-        parent::__construct($credentials, $httpClient, $storage, $scopes, $baseApiUri, true);
+        parent::__construct(
+            $credentials,
+            $httpClient,
+            $storage,
+            $scopes,
+            $baseApiUri,
+            true // use parameter state
+        );
 
         if (null === $baseApiUri) {
-            $this->baseApiUri = new Uri('https://api.spotify.com/v1/');
+            $this->baseApiUri = new Uri('https://api.netatmo.net/');
         }
     }
 
@@ -48,7 +63,8 @@ class Spotify extends AbstractService
      */
     public function getAuthorizationEndpoint()
     {
-        return new Uri('https://accounts.spotify.com/authorize');
+        return new Uri($this->baseApiUri.'oauth2/authorize');
+
     }
 
     /**
@@ -56,7 +72,7 @@ class Spotify extends AbstractService
      */
     public function getAccessTokenEndpoint()
     {
-        return new Uri('https://accounts.spotify.com/api/token');
+        return new Uri($this->baseApiUri.'oauth2/token');
     }
 
     /**
@@ -64,7 +80,7 @@ class Spotify extends AbstractService
      */
     protected function getAuthorizationMethod()
     {
-        return static::AUTHORIZATION_METHOD_HEADER_BEARER;
+        return static::AUTHORIZATION_METHOD_QUERY_STRING;
     }
 
     /**
@@ -77,17 +93,14 @@ class Spotify extends AbstractService
         if (null === $data || !is_array($data)) {
             throw new TokenResponseException('Unable to parse response.');
         } elseif (isset($data['error'])) {
-            throw new TokenResponseException('Error in retrieving token: "' . $data['error'] . '"');
+            throw new TokenResponseException(
+                'Error in retrieving token: "' . $data['error'] . '"'
+            );
         }
-
 
         $token = new StdOAuth2Token();
         $token->setAccessToken($data['access_token']);
-
-        if (isset($data['expires_in'])) {
-            $token->setLifetime($data['expires_in']);
-            unset($data['expires_in']);
-        }
+        $token->setLifetime($data['expires_in']);
 
         if (isset($data['refresh_token'])) {
             $token->setRefreshToken($data['refresh_token']);
@@ -95,18 +108,10 @@ class Spotify extends AbstractService
         }
 
         unset($data['access_token']);
+        unset($data['expires_in']);
 
         $token->setExtraParams($data);
 
         return $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getExtraOAuthHeaders()
-    {
-        return array('Authorization' => 'Basic ' .
-            base64_encode($this->credentials->getConsumerId() . ':' . $this->credentials->getConsumerSecret()));
     }
 }

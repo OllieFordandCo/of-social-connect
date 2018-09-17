@@ -32,17 +32,16 @@ class OF_Twitter_Timeline extends WP_Widget {
     	$default_screen_name = $instance['default_screen_name'];
 
 		echo $args['before_widget'];
-		$follow = '<a href="https://twitter.com/intent/follow?original_referer=http%3A%2F%2Fwildingsmusic.com&region=follow_link&screen_name='.$default_screen_name.'&tw_p=followbutton" class="twitter-follow btn-border"><i class="fa fa-twitter"></i> Follow us</a>';
 		if ( ! empty( $title ) )
-			echo $args['before_title'] . $title . $follow . $args['after_title'];
+			echo $args['before_title'] . $title . $args['after_title'];
 
-		if( $tweets = OF_Social_Connect::retrieve_tweets($default_screen_name, $no_tweets) ) :	
-						
-			$user_template = locate_template( 'of-social-connect/twitter/widget-timeline.php' );
+		if( $tweets = OF_Social_Connect::retrieve_tweets($default_screen_name, $no_tweets) ) :
+
+			$user_template = locate_template( 'social/twitter-widget.php' );
 				
 			if (!empty( $user_template )) :
 					  
-				include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
+				include(locate_template( 'social/twitter-widget.php' ));
 				
 			else :			
 			

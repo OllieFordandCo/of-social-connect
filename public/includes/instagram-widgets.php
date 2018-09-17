@@ -36,11 +36,11 @@ class OF_Instagram_Timeline extends WP_Widget {
 
 		if( $instagram_feed = OF_Social_Connect::retrieve_instagram_feed($user_id, $no_pics) ) :	
 						
-			$user_template = locate_template( 'of-social-connect/instagram/widget-timeline.php' );
+			$user_template = locate_template( 'social/instagram-widget.php' );
 				
 			if (!empty( $user_template )) :
 					  
-				include(locate_template( 'of-social-connect/instagram/widget-timeline.php'));
+				include(locate_template( 'social/instagram-widget.php' ));
 				
 			else :			
 			
