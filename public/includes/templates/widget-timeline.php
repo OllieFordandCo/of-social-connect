@@ -4,8 +4,8 @@ foreach($tweets as $tweet):
 	$tweet_id = $tweet->id; ?>
     <li class="of-tweet">
     	<div id="tweet-<?php echo $tweet_id; ?>" class="tweet-content">
-        	<?php 
-        	$text = preg_replace('#@(\w+)#', '<a target="_blank" href="https://twitter.com/$1">$0</a>', $tweet->text);
+        	<?php  
+        	$text = preg_replace('#@(\w+)#', '<a target="_blank" href="https://twitter.com/$1">$0</a>', $tweet->full_text);
 			$text = preg_replace('/#(\w+)/', '<a target="_blank" href="https://twitter.com/search?q=%23$1&src=hash">$0</a>', $text);
 			echo $text; ?>
         </div>
