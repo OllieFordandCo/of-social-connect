@@ -4,6 +4,7 @@ namespace OAuth\Common\Storage;
 
 use OAuth\Common\Token\TokenInterface;
 use OAuth\Common\Storage\Exception\TokenNotFoundException;
+use OAuth\OAuth2\Token\StdOAuth2Token;
 use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
 
 /**
@@ -52,9 +53,9 @@ class WPDatabase implements TokenStorageInterface
         if ($this->hasAccessToken($service)) {
 			$storage_option = get_option($this->storageVariableName);
             return $storage_option[$service];
+        } else {
+            return new StdOAuth2Token();
         }
-
-        throw new TokenNotFoundException('Token not found in session, are you sure you stored it?');
     }
 
     /**

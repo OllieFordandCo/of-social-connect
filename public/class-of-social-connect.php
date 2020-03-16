@@ -17,10 +17,9 @@
  * If you're interested in introducing administrative or dashboard
  * functionality, then refer to `class-plugin-name-admin.php`
  *
- * @TODO: Rename this class to a proper name for your plugin.
  *
- * @package Plugin_Name
- * @author  Your Name <email@example.com>
+ * @package OF Social Connect
+ * @author  Ruben Madila <contact@rubenmadila.com>
  */
 class OF_Social_Connect {
 
@@ -31,7 +30,7 @@ class OF_Social_Connect {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.1.0';
+	const VERSION = '0.1.5';
 
 	/**
 	 *
@@ -82,6 +81,7 @@ class OF_Social_Connect {
 		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
 		add_shortcode( 'timeline_widget', array($this, 'of_social_connect_timeline_shortcode') );
+        add_shortcode( 'facebook_feed', array($this, 'of_social_connect_facebook_shortcode') );
 
 	}
 
@@ -90,7 +90,7 @@ class OF_Social_Connect {
 	 *
 	 * @since    0.1.0
 	 *
-	 * @return    Plugin slug variable.
+	 * @return   string.
 	 */
 	public function get_plugin_slug() {
 		return $this->plugin_slug;
@@ -373,7 +373,7 @@ class OF_Social_Connect {
 					$asset = $default_asset->return_normalized_asset($asset, 'twitter', true);
 					$twitter[$asset->date] = $asset;
 				}
-				//echo '<div class="d-none">' . var_dump($feed) . '</div>';
+
 				$social['twitter'] = $twitter;
 			} catch(Exception $e) {
 				$social['twitter'] = array();
@@ -401,13 +401,14 @@ class OF_Social_Connect {
 
 		$api_key = $of_fb_api['key'];
 		$api_secret = $of_fb_api['secret'];
+        $client_secret = $of_fb_api['client_secret'];
 
 		if(!empty($api_key) && !empty($api_secret)) :
 
 			$update = false;
 			if ( ! ( $result = get_transient( 'of_facebook_timeline_widget' ) ) ) {
 				$update = true;
-			};
+			}
 
 			$user_id_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
 			$no_pics_changed = (isset($result['no_pics'])) ? $result['no_pics'] : $no_pics;
@@ -415,12 +416,19 @@ class OF_Social_Connect {
 			if($force_update || $user_id_changed !== $user_id || $no_pics_changed !== $no_pics) {
 				$update = true;
 			}
+            $update = false;
+            $result = [
+                'facebook_posts' => false
+            ];
 
 			if($update) {
 
 				$storage = new OAuth\Common\Storage\WPDatabase();
-				$token = $storage->retrieveAccessToken('Facebook');
 
+
+                $token = $storage->hasAccessToken('Facebook') ? $storage->retrieveAccessToken('Facebook') : false;
+
+                $access_token = ($token) ? $token : $client_secret;
 
 				$credentials = new OAuth\Common\Consumer\Credentials(
 					$api_key,
@@ -434,9 +442,10 @@ class OF_Social_Connect {
 
 				$result['user_id'] = $user_id;
 				$result['no_pics'] = $no_pics;
-				$result['facebook_posts'] = json_decode($facebookService->request('/v2.12/'.$user_id.'/posts?limit='.$no_pics.'&fields=id,name,type,created_time,story,message,full_picture,is_hidden,link,permalink_url,caption&access_token='.$token->getAccessToken()));
 
-				set_transient(  'of_facebook_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
+				$result['facebook_posts'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/feed?limit='.$no_pics.'&access_token='.$access_token));
+
+				//set_transient(  'of_facebook_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
 			}
 
 			return $result['facebook_posts'];
@@ -468,6 +477,7 @@ class OF_Social_Connect {
 			$update = false;
 			if ( ! ( $result = get_transient( 'of_instagram_timeline_widget' ) ) ) {
 				$update = true;
+                $result = [];
 			};
 
 			$user_id_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
@@ -591,7 +601,23 @@ class OF_Social_Connect {
 	   return "$difference $periods[$j] ago";
 	}
 
-	// [bartag foo="foo-value"]
+    function template( $file, $args ){
+        // ensure the file exists
+        if ( !file_exists( $file ) ) {
+            return '';
+        }
+
+        // Make values in the associative array easier to access by extracting them
+        if ( is_array( $args ) ){
+            extract( $args );
+        }
+
+        // buffer the output (including the file is "output")
+        ob_start();
+        include $file;
+        return ob_get_clean();
+    }
+
 	function of_social_connect_timeline_shortcode( $atts ) {
 		extract( shortcode_atts( array(
 			'screen_name' => '',
@@ -600,26 +626,44 @@ class OF_Social_Connect {
 		
 		if( $tweets = $this->retrieve_tweets($atts['screen_name'], $atts['limit']) ) :	
 						
-			$user_template = locate_template( 'social/twitter-widget.php' );
+			$user_template = locate_template( 'of-social-connect/twitter/shortcode.php');
 
 			if (!empty( $user_template )) :
-					  
-				$template = include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
-				
-			else :			
-			
-				$template = include( plugin_dir_path( __FILE__ ) . 'includes/templates/widget-timeline.php' );
-				
+				$template = $this->template(locate_template( 'of-social-connect/twitter/shortcode.php'), array('tweets' => $tweets));
+			else :
+				$template = $this->template( plugin_dir_path( __FILE__ ) . 'includes/templates/twitter/shortcode.php', array('tweets' => $tweets));
 			endif;
 		
 		else :
 		
-			$template = 'Please, authorise your twitter account before retrieving tweets.';
+			$template = '';
 		
 		endif;
 
 		
 		return $template;
 	}
+
+    function of_social_connect_facebook_shortcode( $atts ) {
+        extract( shortcode_atts( array(
+            'screen_name' => '',
+            'limit' => 5,
+        ), $atts ) );
+
+        if( $fb_feed = $this->retrieve_facebook_posts($atts['screen_name'], $atts['limit']) ) :
+
+            $user_template = locate_template( 'of-social-connect/facebook/shortcode.php');
+
+            if (!empty( $user_template )) :
+                $template = $this->template($user_template, array('feed' => $fb_feed));
+            else :
+                $template = $this->template( plugin_dir_path( __FILE__ ) . 'includes/templates/facebook/shortcode.php', array('feed' => $fb_feed));
+            endif;
+
+        else :
+            $template = '';
+        endif;
+        return $template;
+    }
 
 }

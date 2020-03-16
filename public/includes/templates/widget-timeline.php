@@ -1,3 +1,4 @@
+<?php if(isset($tweets)) : ?>
 <ul class="tweet-list">
 <?php
 foreach($tweets as $tweet):
@@ -22,3 +23,4 @@ foreach($tweets as $tweet):
 <?php endforeach;	
 ?>
 </ul>
+<?php endif; ?>
