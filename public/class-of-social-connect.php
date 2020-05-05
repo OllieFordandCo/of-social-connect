@@ -405,7 +405,7 @@ class OF_Social_Connect {
 		if(!empty($api_key) && !empty($api_secret)) :
 
 			$update = false;
-			if ( ! ( $result = get_transient( 'of_facebook_timeline_widget' ) ) ) {
+			if ( ! ( $result = get_transient( 'ofc_facebook_timeline_widget' ) ) ) {
 				$update = true;
 			};
 
@@ -436,7 +436,7 @@ class OF_Social_Connect {
 				$result['no_pics'] = $no_pics;
 				$result['facebook_posts'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/posts?limit='.$no_pics.'&fields=id,created_time,story,message,full_picture,is_hidden,permalink_url&access_token='.$token->getAccessToken()));
 
-				set_transient(  'of_facebook_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
+				set_transient(  'ofc_facebook_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
 			}
 
 			return $result['facebook_posts'];
@@ -466,7 +466,7 @@ class OF_Social_Connect {
         if(!empty($api_key) && !empty($api_secret)) :
 
             $update = false;
-            if ( ! ( $result = get_transient( 'of_instagram_timeline_widget' ) ) ) {
+            if ( ! ( $result = get_transient( 'ofc_instagram_timeline_widget' ) ) ) {
                 $update = true;
             };
 
@@ -497,7 +497,7 @@ class OF_Social_Connect {
                 $result['no_pics'] = $no_pics;
                 $result['instagram_feed'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/media?limit='.$no_pics.'&fields=thumbnail_url,caption,id,media_type,username,permalink,media_url,timestamp,like_count,shortcode&access_token='.$token->getAccessToken()));
 
-                set_transient(  'of_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
+                set_transient(  'ofc_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
             }
 
             return $result['instagram_feed'];
@@ -528,7 +528,7 @@ class OF_Social_Connect {
 		if(!empty($api_key) && !empty($api_secret)) :
 		
 			$update = false;
-			if ( ! ( $result = get_transient( 'of_instagram_timeline_widget' ) ) ) {
+			if ( ! ( $result = get_transient( 'ofc_instagram_timeline_widget' ) ) ) {
 				$update = true;
 			};
 
@@ -555,7 +555,7 @@ class OF_Social_Connect {
 				$result['no_pics'] = $no_pics;
 				$result['instagram_feed'] = json_decode($instagramService->request('users/'.$user_id.'/media/recent/?count='.$no_pics));
 
-				set_transient(  'of_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
+				set_transient(  'ofc_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
 			}
 
 			return (property_exists($result['instagram_feed'],'data')) ? $result['instagram_feed']->data : $result['instagram_feed'];
@@ -585,7 +585,7 @@ class OF_Social_Connect {
 		
 			$update = false;
 			
-			if ( ! ( $result = get_transient( 'of_timeline_widget' ) ) ) {
+			if ( ! ( $result = get_transient( 'ofc_timeline_widget' ) ) ) {
 				$update = true;
 			};
 			
@@ -612,7 +612,7 @@ class OF_Social_Connect {
 				$result['no_tweets'] = $no_tweets;
 				$result['tweets'] = json_decode($twitterService->request('statuses/user_timeline.json?screen_name='.$default_screen_name_changed.'&count='.$no_tweets.'&tweet_mode=extended&include_rts=true&exclude_replies=true'));
 				
-				set_transient( 'of_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );			
+				set_transient( 'ofc_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
 			}
 
 			return $result['tweets'];	
@@ -657,7 +657,7 @@ class OF_Social_Connect {
 	function of_social_connect_timeline_shortcode( $atts ) {
         $atts = shortcode_atts( array(
 			'screen_name' => '',
-			'limit' => 5,
+			'limit' => 10,
 		), $atts );
 
 		ob_start();
