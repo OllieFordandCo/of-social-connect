@@ -495,7 +495,7 @@ class OF_Social_Connect {
 
                 $result['user_id'] = $user_id;
                 $result['no_pics'] = $no_pics;
-                $result['instagram_feed'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/media?limit='.$no_pics.'&fields=thumbnail_url,caption,id,media_type,username,permalink,media_url,like_count,shortcode&access_token='.$token->getAccessToken()));
+                $result['instagram_feed'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/media?limit='.$no_pics.'&fields=thumbnail_url,caption,id,media_type,username,permalink,media_url,timestamp,like_count,shortcode&access_token='.$token->getAccessToken()));
 
                 set_transient(  'of_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
             }
@@ -663,7 +663,7 @@ class OF_Social_Connect {
 		ob_start();
 
 		?>
-        <ul class="social-feed-list">
+        <ul class="social-feed-list social-feed-loading">
         <?php
 
 		if( $facebook_posts = $this->retrieve_facebook_posts('thingsmadepublic', $atts['limit'])) :

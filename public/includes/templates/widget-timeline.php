@@ -2,7 +2,7 @@
 <?php
 foreach($tweets as $tweet):
 	$tweet_id = $tweet->id; ?>
-    <li class="social-entry entry-tweet">
+    <li class="social-entry entry-tweet" data-timestamp="<?php echo strtotime($tweet->created_at); ?>">
         <div class="card-icon">
             <i class="fab fa-twitter"></i>
         </div>
