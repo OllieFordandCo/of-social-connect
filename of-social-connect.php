@@ -14,7 +14,7 @@
  * Plugin Name: Ollie Ford & Co Social Connect
  * Plugin URI: http://www.ollieford.co.uk
  * Description: Plugin that uses the OAuth Library to help you connect with Social Network (currently only Twitter) and registers widgets and shortcodes to use * on the front end of your website.
- * Version: 0.1.0
+ * Version: 0.1.3
  * Author: Ruben Madila
  * Author Email: ruben@ollieford.co.uk
  * Text Domain:       of_social_connect
