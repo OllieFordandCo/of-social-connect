@@ -227,7 +227,7 @@ class OF_Social_Connect_Admin {
 		  $this->plugin_slug
 	  );	  	
 	  add_settings_field( 'of_twitter_api[key]', 'API key', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_twitter_credentials_setting_section', array( 'label_for' => 'of_twitter_api[key]', 'option_group' => 'of_twitter_api', 'index' => 'key' ) );
-	  add_settings_field( 'of_twitter_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_twitter_credentials_setting_section', array( 'label_for' => 'of_twitter_api[secret]',  'type' => 'password', 'option_group' => 'of_twitter_api', 'index' => 'secret' ) );
+	  add_settings_field( 'of_twitter_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_twitter_credentials_setting_section', array( 'label_for' => 'of_twitter_api[secret]', 'option_group' => 'of_twitter_api', 'index' => 'secret' ) );  	    
 	  register_setting( $this->plugin_slug, 'of_twitter_api' );
 	  
 	  add_settings_section(
@@ -237,7 +237,7 @@ class OF_Social_Connect_Admin {
 		  $this->plugin_slug
 	  );	  	
 	  add_settings_field( 'of_instagram_api[key]', 'API key', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_instagram_credentials_setting_section', array( 'label_for' => 'of_instagram_api[key]', 'option_group' => 'of_instagram_api', 'index' => 'key' ) );
-	  add_settings_field( 'of_instagram_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_instagram_credentials_setting_section', array( 'label_for' => 'of_instagram_api[secret]', 'type' => 'password', 'option_group' => 'of_instagram_api', 'index' => 'secret' ) );
+	  add_settings_field( 'of_instagram_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_instagram_credentials_setting_section', array( 'label_for' => 'of_instagram_api[secret]', 'option_group' => 'of_instagram_api', 'index' => 'secret' ) );  	    
 	  register_setting( $this->plugin_slug, 'of_instagram_api' );
 
 		add_settings_section(
@@ -247,8 +247,7 @@ class OF_Social_Connect_Admin {
 			$this->plugin_slug
 		);
 		add_settings_field( 'of_facebook_api[key]', 'App ID', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_facebook_credentials_setting_section', array( 'label_for' => 'of_facebook_api[key]', 'option_group' => 'of_facebook_api', 'index' => 'key' ) );
-		add_settings_field( 'of_facebook_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_facebook_credentials_setting_section', array( 'label_for' => 'of_facebook_api[secret]', 'type' => 'password', 'option_group' => 'of_facebook_api', 'index' => 'secret' ) );
-        add_settings_field( 'of_facebook_api[client_secret]', 'Client Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_facebook_credentials_setting_section', array( 'label_for' => 'of_facebook_api[client_secret]', 'type' => 'password', 'option_group' => 'of_facebook_api', 'index' => 'client_secret' ) );
+		add_settings_field( 'of_facebook_api[secret]', 'API Secret', array($this, 'of_text_input_callback_function'), $this->plugin_slug, 'of_facebook_credentials_setting_section', array( 'label_for' => 'of_facebook_api[secret]', 'option_group' => 'of_facebook_api', 'index' => 'secret' ) );
 		register_setting( $this->plugin_slug, 'of_facebook_api' );
 
 	}
@@ -293,14 +292,11 @@ class OF_Social_Connect_Admin {
 		// echo section intro text here
 	}
 
-
 	function of_text_input_callback_function($arg) {
 			$id = $arg['label_for'];
 			$option = get_option($arg['option_group']);
 			$index = $arg['index'];
-			$type = (isset($arg['type'])) ? $arg['type'] : 'text';
-
-			echo '<input name="'.$id.'" type="'.$type.'" id="'.$id.'" value="'.$option[$index].'" class="regular-text" mouseev="true" keyev="true">';
+			echo '<input name="'.$id.'" type="text" id="'.$id.'" value="'.$option[$index].'" class="regular-text" mouseev="true" keyev="true">';
 	}
 
 }

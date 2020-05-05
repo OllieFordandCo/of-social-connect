@@ -17,9 +17,10 @@
  * If you're interested in introducing administrative or dashboard
  * functionality, then refer to `class-plugin-name-admin.php`
  *
+ * @TODO: Rename this class to a proper name for your plugin.
  *
- * @package OF Social Connect
- * @author  Ruben Madila <contact@rubenmadila.com>
+ * @package Plugin_Name
+ * @author  Your Name <email@example.com>
  */
 class OF_Social_Connect {
 
@@ -30,7 +31,7 @@ class OF_Social_Connect {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.1.5';
+	const VERSION = '0.1.0';
 
 	/**
 	 *
@@ -81,7 +82,6 @@ class OF_Social_Connect {
 		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
 		add_shortcode( 'timeline_widget', array($this, 'of_social_connect_timeline_shortcode') );
-        add_shortcode( 'facebook_feed', array($this, 'of_social_connect_facebook_shortcode') );
 
 	}
 
@@ -90,7 +90,7 @@ class OF_Social_Connect {
 	 *
 	 * @since    0.1.0
 	 *
-	 * @return   string.
+	 * @return    Plugin slug variable.
 	 */
 	public function get_plugin_slug() {
 		return $this->plugin_slug;
@@ -373,7 +373,7 @@ class OF_Social_Connect {
 					$asset = $default_asset->return_normalized_asset($asset, 'twitter', true);
 					$twitter[$asset->date] = $asset;
 				}
-
+				//echo '<div class="d-none">' . var_dump($feed) . '</div>';
 				$social['twitter'] = $twitter;
 			} catch(Exception $e) {
 				$social['twitter'] = array();
@@ -401,14 +401,13 @@ class OF_Social_Connect {
 
 		$api_key = $of_fb_api['key'];
 		$api_secret = $of_fb_api['secret'];
-        $client_secret = $of_fb_api['client_secret'];
 
 		if(!empty($api_key) && !empty($api_secret)) :
 
 			$update = false;
 			if ( ! ( $result = get_transient( 'of_facebook_timeline_widget' ) ) ) {
 				$update = true;
-			}
+			};
 
 			$user_id_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
 			$no_pics_changed = (isset($result['no_pics'])) ? $result['no_pics'] : $no_pics;
@@ -416,19 +415,12 @@ class OF_Social_Connect {
 			if($force_update || $user_id_changed !== $user_id || $no_pics_changed !== $no_pics) {
 				$update = true;
 			}
-            $update = false;
-            $result = [
-                'facebook_posts' => false
-            ];
 
 			if($update) {
 
 				$storage = new OAuth\Common\Storage\WPDatabase();
+				$token = $storage->retrieveAccessToken('Facebook');
 
-
-                $token = $storage->hasAccessToken('Facebook') ? $storage->retrieveAccessToken('Facebook') : false;
-
-                $access_token = ($token) ? $token : $client_secret;
 
 				$credentials = new OAuth\Common\Consumer\Credentials(
 					$api_key,
@@ -442,10 +434,9 @@ class OF_Social_Connect {
 
 				$result['user_id'] = $user_id;
 				$result['no_pics'] = $no_pics;
+				$result['facebook_posts'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/posts?limit='.$no_pics.'&fields=id,created_time,story,message,full_picture,is_hidden,permalink_url&access_token='.$token->getAccessToken()));
 
-				$result['facebook_posts'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/feed?limit='.$no_pics.'&access_token='.$access_token));
-
-				//set_transient(  'of_facebook_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
+				set_transient(  'of_facebook_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
 			}
 
 			return $result['facebook_posts'];
@@ -458,12 +449,74 @@ class OF_Social_Connect {
 
 	}
 
-	/**
+    /**
+     * Retrieve any tweets saves on the database.
+     *
+     * @since    0.1.0
+     */
+    public static function retrieve_instagram_feed($user_id, $no_pics, $force_update = false) {
+
+        //Check if user has already submitted the api key and secret
+        $of_fb_api = get_option('of_facebook_api');
+
+
+        $api_key = $of_fb_api['key'];
+        $api_secret = $of_fb_api['secret'];
+
+        if(!empty($api_key) && !empty($api_secret)) :
+
+            $update = false;
+            if ( ! ( $result = get_transient( 'of_instagram_timeline_widget' ) ) ) {
+                $update = true;
+            };
+
+            $user_id_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
+            $no_pics_changed = (isset($result['no_pics'])) ? $result['no_pics'] : $no_pics;
+
+            if($force_update || $user_id_changed !== $user_id || $no_pics_changed !== $no_pics) {
+                $update = true;
+            }
+
+            if($update) {
+
+                $storage = new OAuth\Common\Storage\WPDatabase();
+                $token = $storage->retrieveAccessToken('Facebook');
+
+
+                $credentials = new OAuth\Common\Consumer\Credentials(
+                    $api_key,
+                    $api_secret,
+                    admin_url('options-general.php?page=of_social_connect&authorised_facebook=true')
+                );
+
+
+                $serviceFactory = new OAuth\ServiceFactory();
+                $facebookService = $serviceFactory->createService('Facebook', $credentials, $storage);
+
+                $result['user_id'] = $user_id;
+                $result['no_pics'] = $no_pics;
+                $result['instagram_feed'] = json_decode($facebookService->request('/v6.0/'.$user_id.'/media?limit='.$no_pics.'&fields=thumbnail_url,caption,id,media_type,username,permalink,media_url,like_count,shortcode&access_token='.$token->getAccessToken()));
+
+                set_transient(  'of_instagram_timeline_widget', $result, 15 * MINUTE_IN_SECONDS );
+            }
+
+            return $result['instagram_feed'];
+
+        else :
+
+            return false;
+
+        endif;
+
+    }
+
+
+    /**
 	 * Retrieve any tweets saves on the database.
 	 *
 	 * @since    0.1.0
 	 */
-	public static function retrieve_instagram_feed($user_id, $no_pics, $force_update = false) {
+	public static function retrieve_old_instagram_feed($user_id, $no_pics, $force_update = false) {
 
 		//Check if user has already submitted the api key and secret
 		$of_instagram_api = get_option('of_instagram_api');
@@ -477,7 +530,6 @@ class OF_Social_Connect {
 			$update = false;
 			if ( ! ( $result = get_transient( 'of_instagram_timeline_widget' ) ) ) {
 				$update = true;
-                $result = [];
 			};
 
 			$user_id_changed = (isset($result['user_id'])) ? $result['user_id'] : $user_id;
@@ -601,69 +653,77 @@ class OF_Social_Connect {
 	   return "$difference $periods[$j] ago";
 	}
 
-    function template( $file, $args ){
-        // ensure the file exists
-        if ( !file_exists( $file ) ) {
-            return '';
-        }
-
-        // Make values in the associative array easier to access by extracting them
-        if ( is_array( $args ) ){
-            extract( $args );
-        }
-
-        // buffer the output (including the file is "output")
-        ob_start();
-        include $file;
-        return ob_get_clean();
-    }
-
+	// [bartag foo="foo-value"]
 	function of_social_connect_timeline_shortcode( $atts ) {
-		extract( shortcode_atts( array(
+        $atts = shortcode_atts( array(
 			'screen_name' => '',
 			'limit' => 5,
-		), $atts ) );
+		), $atts );
+
+		ob_start();
+
+		?>
+        <ul class="social-feed-list">
+        <?php
+
+		if( $facebook_posts = $this->retrieve_facebook_posts('thingsmadepublic', $atts['limit'])) :
+
+            $user_template = locate_template( 'social/facebook-widget.php' );
+
+            if (!empty( $user_template )) :
+
+                include(locate_template( 'of-social-connect/templates/widget-facebook-timeline.php'));
+
+            else :
+
+                include( plugin_dir_path( __FILE__ ) . 'includes/templates/widget-facebook-timeline.php' );
+
+            endif;
+
+        endif;
+
+        if( $instagram_feed = $this->retrieve_instagram_feed('17841404958562995', $atts['limit'])) :
+
+            $user_template = locate_template( 'social/instagram-widget.php' );
+
+            if (!empty( $user_template )) :
+
+                include(locate_template( 'of-social-connect/templates/widget-instagram-timeline.php'));
+
+            else :
+
+                include( plugin_dir_path( __FILE__ ) . 'includes/templates/widget-instagram-timeline.php' );
+
+            endif;
+
+        endif;
 		
-		if( $tweets = $this->retrieve_tweets($atts['screen_name'], $atts['limit']) ) :	
+		if( $tweets = $this->retrieve_tweets($atts['screen_name'], $atts['limit']) ) :
 						
-			$user_template = locate_template( 'of-social-connect/twitter/shortcode.php');
+			$user_template = locate_template( 'social/twitter-widget.php' );
 
 			if (!empty( $user_template )) :
-				$template = $this->template(locate_template( 'of-social-connect/twitter/shortcode.php'), array('tweets' => $tweets));
-			else :
-				$template = $this->template( plugin_dir_path( __FILE__ ) . 'includes/templates/twitter/shortcode.php', array('tweets' => $tweets));
+					  
+				include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
+				
+			else :			
+			
+				include( plugin_dir_path( __FILE__ ) . 'includes/templates/widget-timeline.php' );
+				
 			endif;
 		
 		else :
 		
-			$template = '';
+			echo 'Please, authorise your twitter account before retrieving tweets.';
 		
 		endif;
 
+        ?>
+        </ul>
+        <?php
+		$template = ob_get_clean();
 		
 		return $template;
 	}
-
-    function of_social_connect_facebook_shortcode( $atts ) {
-        extract( shortcode_atts( array(
-            'screen_name' => '',
-            'limit' => 5,
-        ), $atts ) );
-
-        if( $fb_feed = $this->retrieve_facebook_posts($atts['screen_name'], $atts['limit']) ) :
-
-            $user_template = locate_template( 'of-social-connect/facebook/shortcode.php');
-
-            if (!empty( $user_template )) :
-                $template = $this->template($user_template, array('feed' => $fb_feed));
-            else :
-                $template = $this->template( plugin_dir_path( __FILE__ ) . 'includes/templates/facebook/shortcode.php', array('feed' => $fb_feed));
-            endif;
-
-        else :
-            $template = '';
-        endif;
-        return $template;
-    }
 
 }

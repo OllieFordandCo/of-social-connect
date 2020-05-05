@@ -42,7 +42,7 @@ if(!empty($fb_api_key) && !empty($fb_api_secret)) :
     );
 
     $fb_serviceFactory = new ServiceFactory();
-    $facebookService = $fb_serviceFactory->createService('Facebook', $fb_credentials, $storage, array('public_profile'));
+    $facebookService = $fb_serviceFactory->createService('Facebook', $fb_credentials, $storage, array('public_profile', 'instagram_basic', 'pages_show_list'));
 
     if(!empty($_GET['code']) && isset($_GET['authorised_facebook'])) :
 

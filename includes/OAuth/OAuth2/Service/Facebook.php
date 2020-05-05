@@ -122,6 +122,9 @@ class Facebook extends AbstractService
     const SCOPE_PAGES                         = 'manage_pages';
     const SCOPE_PUBLISH_PAGES                 = 'publish_pages';
 
+    const SCOPE_PAGES_SHOW_LIST               = 'pages_show_list';
+    const SCOPE_INSTAGRAM_BASIC               = 'instagram_basic';
+
     public function __construct(
         CredentialsInterface $credentials,
         ClientInterface $httpClient,
