@@ -18,7 +18,7 @@ foreach($facebook_posts->data as $data) {
                 <?php echo $message; ?>
             </div>
             <div class="tweet-meta">
-                <span class="time-meta"><a href="https://twitter.com/<?php //echo $tweet->user->screen_name; ?>/statuses/<?php echo  $data->ID; ?>" target="_blank"><?php echo OF_Social_Connect::time_ago(strtotime($data->created_at)); ?></a></span>
+                <span class="time-meta"><a href="https://twitter.com/<?php //echo $tweet->user->screen_name; ?>/statuses/<?php echo  $data->ID; ?>" target="_blank"><?php echo OF_Social_Connect::time_ago(strtotime($data->created_time)); ?></a></span>
             </div>
             <div class="card-icon">
                 <i class="fab fa-facebook-f"></i>
