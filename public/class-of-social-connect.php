@@ -668,7 +668,7 @@ class OF_Social_Connect {
 
 		if( $facebook_posts = $this->retrieve_facebook_posts('thingsmadepublic', $atts['limit'])) :
 
-            $user_template = locate_template( 'social/facebook-widget.php' );
+            $user_template = locate_template( 'of-social-connect/templates/widget-facebook-timeline.php' );
 
             if (!empty( $user_template )) :
 
@@ -684,7 +684,7 @@ class OF_Social_Connect {
 
         if( $instagram_feed = $this->retrieve_instagram_feed('17841404958562995', $atts['limit'])) :
 
-            $user_template = locate_template( 'social/instagram-widget.php' );
+            $user_template = locate_template( 'of-social-connect/templates/widget-instagram-timeline.php' );
 
             if (!empty( $user_template )) :
 
@@ -700,11 +700,11 @@ class OF_Social_Connect {
 		
 		if( $tweets = $this->retrieve_tweets($atts['screen_name'], $atts['limit']) ) :
 						
-			$user_template = locate_template( 'social/twitter-widget.php' );
+			$user_template = locate_template( 'of-social-connect/templates/widget-timeline.php' );
 
 			if (!empty( $user_template )) :
 					  
-				include(locate_template( 'of-social-connect/twitter/widget-timeline.php'));
+				include(locate_template( 'of-social-connect/templates/widget-timeline.php'));
 				
 			else :			
 			
